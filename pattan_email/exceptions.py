@@ -11,3 +11,16 @@ class InvalidEmailPurpose(Exception):
         else:
             return "InvalidEmailPurpose valid values include 'transactional' or 'marketing"
 
+
+class MailSendFailure(Exception):
+    def __init__(self, *args):
+        if args:
+            self.message = args[0]
+        else:
+            self.message = None
+
+    def __str__(self):
+        if self.message:
+            return "MailSendFailure, {0} ".format(self.message)
+        else:
+            return "MailSendFailure attempts to send email failed"

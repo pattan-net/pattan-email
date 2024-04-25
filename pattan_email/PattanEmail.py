@@ -1,15 +1,13 @@
 from sendgrid import SendGridAPIClient
 from django.conf import settings
 import json
-import logging
 import traceback
-from .exceptions import InvalidEmailPurpose
+from .exceptions import InvalidEmailPurpose, MailSendFailure
 
 
 class PattanEmail:
     def __init__(self):
         self.api_key = settings.SENDGRID_API_KEY
-        self.logger = logging.getLogger('django')
         self._purpose = 'transactional'  # or marketing
 
     def set_purpose(self, purpose):
@@ -85,8 +83,7 @@ class PattanEmail:
         try:
             sg_response = sg.client.mail.send.post(request_body=message)
         except Exception as e:
-            self.logger.error("unable to send email to " + str(to_addr))
-            self.logger.error(traceback.format_exc())
+            raise MailSendFailure
         return sg_response
 
     templates = {

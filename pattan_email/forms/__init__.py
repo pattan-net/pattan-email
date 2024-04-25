@@ -1,1 +1,0 @@
-from .event_all_attendee_message_form import EventAllAttendeesMessageForm

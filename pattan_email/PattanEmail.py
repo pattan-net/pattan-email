@@ -11,7 +11,7 @@ class PattanEmail:
         if not self.api_key:
             raise MissingAPIKey
 
-        if self._purpose != 'transactional' or self._purpose !=  'marketing':
+        if self._purpose != 'transactional' and self._purpose != 'marketing':
             raise InvalidPurpose
 
     def set_purpose(self, purpose):

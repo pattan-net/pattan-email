@@ -1,14 +1,18 @@
 from sendgrid import SendGridAPIClient
-from django.conf import settings
 import json
-import traceback
-from .exceptions import InvalidEmailPurpose, MailSendFailure
+from .exceptions import InvalidEmailPurpose, MailSendFailure, MissingAPIKey, InvalidPurpose
 
 
 class PattanEmail:
-    def __init__(self):
-        self.api_key = settings.SENDGRID_API_KEY
-        self._purpose = 'transactional'  # or marketing
+    def __init__(self, api_key=None, purpose='transactional'):
+        self.api_key = api_key
+        self._purpose = purpose
+
+        if not self.api_key:
+            raise MissingAPIKey
+
+        if self._purpose != 'transactional' or self._purpose !=  'marketing':
+            raise InvalidPurpose
 
     def set_purpose(self, purpose):
         if purpose != 'marketing' and purpose != 'transactional':

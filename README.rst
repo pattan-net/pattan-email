@@ -1,4 +1,4 @@
-git b============
+============
 pattan-email
 ============
 
@@ -23,6 +23,8 @@ Details
     pattan-email @ git+ssh://git@github.com/pattan-net/pattan-email.git@6c5043126464a2034b402f59b0c382469801ef5e
 2. The pattan-email package defines the sendgrid package as a dependency.  Therefore the sendgrid
 package does not need to be defined in the requirements.txt file of the application using this package
+3. If you made a change to this repo, you can not deploy on top of an already running instance. You 
+should provision one from scratch. 
 
 
 

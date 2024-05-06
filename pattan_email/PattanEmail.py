@@ -91,10 +91,9 @@ class PattanEmail:
         return sg_response
 
     templates = {
-        "PATTAN_DEFAULT_TEMPLATE":
-            {
-                "sendgrid_template_id": "d-3890a147fac341c187cc424b1b595c4c",
-            },
+        "PATTAN_DEFAULT_TEMPLATE": {"sendgrid_template_id": "d-3890a147fac341c187cc424b1b595c4c", },
+        "SURVEY_CONFIRMATION": {"sendgrid_template_id": "d-eea0f32d9ef143f48160100c363281af", },
+        "SURVEY_REQUEST": {"sendgrid_template_id": "d-66c5cd0a14224c4c9e3d52ac840486ff", },
     }
 
     unsubscribe_groups = {

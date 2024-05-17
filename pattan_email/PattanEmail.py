@@ -7,6 +7,7 @@ class PattanEmail:
     def __init__(self, api_key=None, purpose='transactional'):
         self.api_key = api_key
         self._purpose = purpose
+        self.sg = SendGridAPIClient(api_key=self.api_key)
 
         if not self.api_key:
             raise MissingAPIKey
@@ -24,11 +25,10 @@ class PattanEmail:
 
     def send_template_email(self, to_addr, subject, body, from_value=None, template="PATTAN_DEFAULT_TEMPLATE",
                             asm_group="pattan unsubscribe"):
-        sg = SendGridAPIClient(api_key=self.api_key)
         sender = None
         sg_response = ''
         if from_value and from_value.isnumeric():
-            sender_response = sg.client.senders._(from_value).get()
+            sender_response = self.sg.client.senders._(from_value).get()
             if sender_response.status_code == 200:
                 sender = json.loads(sender_response.body)
         if not sender:
@@ -85,7 +85,7 @@ class PattanEmail:
         }
 
         try:
-            sg_response = sg.client.mail.send.post(request_body=message)
+            sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:
             raise MailSendFailure
         return sg_response
@@ -117,3 +117,7 @@ class PattanEmail:
         }
 
     }
+
+    def send_personalized_template_email(self, personalization_list, from_value='no-reply@pattan.net',
+                                         template="PATTAN_DEFAULT_TEMPLATE"):
+        pass

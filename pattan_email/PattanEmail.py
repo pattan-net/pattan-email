@@ -17,14 +17,15 @@ class PattanEmail:
             }
         }
         self.senders = {
-        "DEFAULT": {
-            'from': {'email': 'no-reply@pattan.net'},
-            'nickname': 'no-reply@pattan.net',
-            'reply_to': 'no-reply@pattan.net',
-            'address': '6340 Flank Drive',
-            'city': 'Harrisburg',
-            'state': 'Pennsylvania',
-            'zip': '17112'
+            "DEFAULT": {
+                'from': {'email': 'no-reply@pattan.net'},
+                'nickname': 'no-reply@pattan.net',
+                'reply_to': 'no-reply@pattan.net',
+                'address': '6340 Flank Drive',
+                'city': 'Harrisburg',
+                'state': 'Pennsylvania',
+                'zip': '17112'
+            }
         }
 
         if not self.api_key:
@@ -114,18 +115,20 @@ class PattanEmail:
         "SURVEY_REQUEST": {"sendgrid_template_id": "d-66c5cd0a14224c4c9e3d52ac840486ff", },
     }
 
-
-
-    }
-
     def send_personalized_template_email(self, personalization_list, template_id, from_value='no-reply@pattan.net'):
-        from_email = {'email': self.sender['from']['email']}
-        from_email['name'] = self.sender['nickname']
+        """
+        :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
+        :param template_id:
+        :param from_value:
+        :return:
+        """
+        sender = self.senders['DEFAULT']['from']['email']
+        from_email = {'email': self.sender['from']['email'], 'name': self.sender['nickname']}
 
         ip_pool_name = "Pattan_Marketing" if self._purpose == "marketing" else "pattan_transactional"
 
         asm = {
-            'group_id': self.unsubscribe_groups[asm_group]['group_id'],
+            'group_id': self.unsubscribe_groups['asm_group']['group_id'],
             'groups_to_display': [
                 self.unsubscribe_groups['pattan unsubscribe']['group_id'],
                 self.unsubscribe_groups['SendGrid Tech Test Group']['group_id']

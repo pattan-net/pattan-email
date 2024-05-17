@@ -8,6 +8,24 @@ class PattanEmail:
         self.api_key = api_key
         self._purpose = purpose
         self.sg = SendGridAPIClient(api_key=self.api_key)
+        self.unsubscribe_groups = {
+            'SendGrid Tech Test Group': {
+                'group_id': 31335
+            },
+            'pattan unsubscribe': {
+                'group_id': 32801
+            }
+        }
+        self.senders = {
+        "DEFAULT": {
+            'from': {'email': 'no-reply@pattan.net'},
+            'nickname': 'no-reply@pattan.net',
+            'reply_to': 'no-reply@pattan.net',
+            'address': '6340 Flank Drive',
+            'city': 'Harrisburg',
+            'state': 'Pennsylvania',
+            'zip': '17112'
+        }
 
         if not self.api_key:
             raise MissingAPIKey
@@ -96,28 +114,36 @@ class PattanEmail:
         "SURVEY_REQUEST": {"sendgrid_template_id": "d-66c5cd0a14224c4c9e3d52ac840486ff", },
     }
 
-    unsubscribe_groups = {
-        'SendGrid Tech Test Group': {
-            'group_id': 31335
-        },
-        'pattan unsubscribe': {
-            'group_id': 32801
-        }
-    }
 
-    senders = {
-        "DEFAULT": {
-            'from': {'email': 'no-reply@pattan.net'},
-            'nickname': 'no-reply@pattan.net',
-            'reply_to': 'no-reply@pattan.net',
-            'address': '6340 Flank Drive',
-            'city': 'Harrisburg',
-            'state': 'Pennsylvania',
-            'zip': '17112'
-        }
 
     }
 
-    def send_personalized_template_email(self, personalization_list, from_value='no-reply@pattan.net',
-                                         template="PATTAN_DEFAULT_TEMPLATE"):
-        pass
+    def send_personalized_template_email(self, personalization_list, template_id, from_value='no-reply@pattan.net'):
+        from_email = {'email': self.sender['from']['email']}
+        from_email['name'] = self.sender['nickname']
+
+        ip_pool_name = "Pattan_Marketing" if self._purpose == "marketing" else "pattan_transactional"
+
+        asm = {
+            'group_id': self.unsubscribe_groups[asm_group]['group_id'],
+            'groups_to_display': [
+                self.unsubscribe_groups['pattan unsubscribe']['group_id'],
+                self.unsubscribe_groups['SendGrid Tech Test Group']['group_id']
+            ]
+        }
+
+        template_id = template_id
+
+        message = {
+            'asm': asm,
+            'from': from_email,
+            'ip_pool_name': ip_pool_name,
+            'template_id': template_id,
+            'personalizations': personalization_list
+        }
+
+        try:
+            sg_response = self.sg.client.mail.send.post(request_body=message)
+        except Exception as e:
+            raise MailSendFailure
+        return sg_response

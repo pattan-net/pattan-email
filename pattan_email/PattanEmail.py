@@ -44,6 +44,16 @@ class PattanEmail:
 
     def send_template_email(self, to_addr, subject, body, from_value=None, template="PATTAN_DEFAULT_TEMPLATE",
                             asm_group="pattan unsubscribe"):
+        '''
+        This function is good to use when the email being sent is same for each recipient.
+        :param to_addr:
+        :param subject:
+        :param body:
+        :param from_value:
+        :param template:
+        :param asm_group:
+        :return: SendGrid client response or throws an exception
+        '''
         sender = None
         sg_response = ''
         if from_value and from_value.isnumeric():
@@ -117,25 +127,22 @@ class PattanEmail:
 
     def send_personalized_template_email(self, personalization_list, template_id, from_value='no-reply@pattan.net'):
         """
+        This function should be used when the email is unique for each recipient.
         :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
-        :param template_id:
-        :param from_value:
         :return:
         """
-        sender = self.senders['DEFAULT']['from']['email']
-        from_email = {'email': self.sender['from']['email'], 'name': self.sender['nickname']}
+        sender = self.senders['DEFAULT']
+        from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
 
         ip_pool_name = "Pattan_Marketing" if self._purpose == "marketing" else "pattan_transactional"
 
         asm = {
-            'group_id': self.unsubscribe_groups['asm_group']['group_id'],
+            'group_id': self.unsubscribe_groups['pattan unsubscribe']['group_id'],
             'groups_to_display': [
                 self.unsubscribe_groups['pattan unsubscribe']['group_id'],
                 self.unsubscribe_groups['SendGrid Tech Test Group']['group_id']
             ]
         }
-
-        template_id = template_id
 
         message = {
             'asm': asm,

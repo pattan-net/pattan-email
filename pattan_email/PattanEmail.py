@@ -65,7 +65,7 @@ class PattanEmail:
 
         if from_value and False == from_value.isnumeric():
             sender['nickname'] = None
-            sender['from'] = {'email': from_value}
+            sender['from_addr'] = {'email': from_value}
             sender['reply-to'] = from_value
 
         # For any future time when new capabilities need to be added, like attachments or categories:

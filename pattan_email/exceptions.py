@@ -26,7 +26,7 @@ class MailSendFailure(Exception):
             return "MailSendFailure attempts to send email failed"
 
 
-class MissingAPIKey(Exception):
+class MissingConfiguration(Exception):
     def __init__(self, *args):
         if args:
             self.message = args[0]

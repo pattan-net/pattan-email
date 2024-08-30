@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 #: Name of the application
-APP_NAME = "pattan-email"
+APP_NAME = "pattanemail"
 
 #: Prefix used for environment variables
 ENV_PREFIX = "PATTAN_EMAIL_"

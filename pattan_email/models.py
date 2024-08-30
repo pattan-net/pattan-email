@@ -20,7 +20,13 @@ class UnSubscribeGroup(BaseModel):
     group_id: int
 
 
+class EmailTemplate(BaseModel):
+    id: str
+
+
 class Config(BaseModel):
     api_key: str
     senders: Dict[str, Sender]
     unsubscribe_groups: Dict[str, UnSubscribeGroup]
+    email_templates: Dict[str, EmailTemplate]
+

@@ -1,35 +1,16 @@
 from sendgrid import SendGridAPIClient
 import json
-from .exceptions import InvalidEmailPurpose, MailSendFailure, MissingAPIKey, InvalidPurpose
+from pattan_email.exceptions import InvalidEmailPurpose, MailSendFailure, MissingConfiguration, InvalidPurpose
 
 
 class PattanEmail:
-    def __init__(self, api_key=None, purpose='transactional'):
-        self.api_key = api_key
+    def __init__(self, config=None, purpose='transactional'):
+        self.settings = config
         self._purpose = purpose
-        self.sg = SendGridAPIClient(api_key=self.api_key)
-        self.unsubscribe_groups = {
-            'SendGrid Tech Test Group': {
-                'group_id': 31335
-            },
-            'pattan unsubscribe': {
-                'group_id': 32801
-            }
-        }
-        self.senders = {
-            "DEFAULT": {
-                'from': {'email': 'no-reply@pattan.net'},
-                'nickname': 'no-reply@pattan.net',
-                'reply_to': 'no-reply@pattan.net',
-                'address': '6340 Flank Drive',
-                'city': 'Harrisburg',
-                'state': 'Pennsylvania',
-                'zip': '17112'
-            }
-        }
+        self.sg = SendGridAPIClient(api_key=self.settings.api_key)
 
-        if not self.api_key:
-            raise MissingAPIKey
+        if not self.settings:
+            raise MissingConfiguration
 
         if self._purpose != 'transactional' and self._purpose != 'marketing':
             raise InvalidPurpose

@@ -1,4 +1,32 @@
+[project]
+name = "pattan-sendgrid"
+version = "1.0.0"
+authors = [
+  { name="Markus Weltin", email="mweltin@pattan.net" },
+]
+maintainers = [
+  { name="Markus Weltin", email="mweltin@pattan.net" },
+]
+description = "Mange Sendgrid assets"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "sendgrid>=6.10.0",
+]
+
+keywords = ["pattan", "sendgrid", ]
+
+[project.urls]
+Homepage = "https://github.com/pattan-net/pattan-email"
+Important = "https://www.youtube.com/watch?v=xvFZjo5PgG0"
+Documentation = "https://github.com/pattan-net/pattan-email/docs"
+
+
 [build-system]
 requires = ['setuptools>=40.8.0', 'sendgrid>=6.10.0']
 build-backend = 'setuptools.build_meta'
-

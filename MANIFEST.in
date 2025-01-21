@@ -1,4 +1,0 @@
-include LICENSE
-include README.md
-recursive-include email-pattan/static *
-recursive-include email-pattan/templates *

@@ -4,35 +4,38 @@ from .exceptions import MailSendFailure, MissingAPIKey, InvalidPurpose
 
 
 class PattanEmail:
-    def __init__(self, api_key=None, purpose='transactional'):
+    def __init__(self, unsubscribe_groups, senders, templates, api_key=None, purpose='transactional'):
         self.api_key = api_key
         self._purpose = purpose
         self.sg = SendGridAPIClient(api_key=self.api_key)
-        self.unsubscribe_groups = {
-            'SendGrid Tech Test Group': {
-                'group_id': 31335
-            },
-            'pattan unsubscribe': {
-                'group_id': 32801
-            }
-        }
-        self.senders = {
-            "DEFAULT": {
-                'from': {'email': 'no-reply@pattan.net'},
-                'nickname': 'no-reply@pattan.net',
-                'reply_to': 'no-reply@pattan.net',
-                'address': '6340 Flank Drive',
-                'city': 'Harrisburg',
-                'state': 'Pennsylvania',
-                'zip': '17112'
-            }
-        }
-
-        self.templates = {
-            "PATTAN_DEFAULT_TEMPLATE": {"sendgrid_template_id": "d-3890a147fac341c187cc424b1b595c4c", },
-            "SURVEY_CONFIRMATION": {"sendgrid_template_id": "d-eea0f32d9ef143f48160100c363281af", },
-            "SURVEY_REQUEST": {"sendgrid_template_id": "d-66c5cd0a14224c4c9e3d52ac840486ff", },
-        }
+        self.unsubscribe_groups = unsubscribe_groups
+        self.senders = senders
+        self.templates = templates
+        # self.unsubscribe_groups = {
+        #     'SendGrid Tech Test Group': {
+        #         'group_id': 31335
+        #     },
+        #     'pattan unsubscribe': {
+        #         'group_id': 32801
+        #     }
+        # }
+        # self.senders = {
+        #     "DEFAULT": {
+        #         'from': {'email': 'no-reply@pattan.net'},
+        #         'nickname': 'no-reply@pattan.net',
+        #         'reply_to': 'no-reply@pattan.net',
+        #         'address': '6340 Flank Drive',
+        #         'city': 'Harrisburg',
+        #         'state': 'Pennsylvania',
+        #         'zip': '17112'
+        #     }
+        # }
+        #
+        # self.templates = {
+        #     "PATTAN_DEFAULT_TEMPLATE": {"sendgrid_template_id": "d-3890a147fac341c187cc424b1b595c4c", },
+        #     "SURVEY_CONFIRMATION": {"sendgrid_template_id": "d-eea0f32d9ef143f48160100c363281af", },
+        #     "SURVEY_REQUEST": {"sendgrid_template_id": "d-66c5cd0a14224c4c9e3d52ac840486ff", },
+        # }
 
         if not self.api_key:
             raise MissingAPIKey
@@ -48,8 +51,8 @@ class PattanEmail:
     def get_purpose(self):
         return self._purpose
 
-    def send_template_email(self, to_addr, subject, body, from_value=None, template="PATTAN_DEFAULT_TEMPLATE",
-                            asm_group="pattan unsubscribe"):
+    def send_template_email(self, to_addr, subject, body, from_value=None, template="DEFAULT_TEMPLATE",
+                            asm_group="DEFAULT_ASM"):
         '''
         This function is good to use when the email being sent is same for each recipient.
         :param to_addr:
@@ -60,6 +63,7 @@ class PattanEmail:
         :param asm_group:
         :return: SendGrid client response or throws an exception
         '''
+
         sender = None
         sg_response = ''
         if from_value and from_value.isnumeric():
@@ -99,7 +103,7 @@ class PattanEmail:
         if sender['nickname']:
             from_email['name'] = sender['nickname']
 
-        ip_pool_name = "Pattan_Marketing" if self._purpose == "marketing" else "pattan_transactional"
+        ip_pool_name = "marketing" if self._purpose == "marketing" else "transactional"
 
         asm = {
             'group_id': self.unsubscribe_groups[asm_group]['group_id'],

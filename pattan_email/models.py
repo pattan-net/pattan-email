@@ -35,4 +35,3 @@ class Config(BaseModel):
     senders: Dict[str, Sender]
     unsubscribe_groups: Dict[str, UnSubscribeGroup]
     email_templates: Dict[str, EmailTemplate]
-

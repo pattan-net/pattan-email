@@ -38,3 +38,16 @@ class InvalidPurpose(Exception):
             return "InvalidPurpose, {0} ".format(self.message)
         else:
             return "InvalidPurpose value must be either 'transactional' or 'marketing'"
+
+class MalformedConfiguration(Exception):
+    def __init__(self, *args):
+        if args:
+            self.message = args[0]
+        else:
+            self.message = None
+
+    def __str__(self):
+        if self.message:
+            return "MalformedConfiguration, {0} ".format(self.message)
+        else:
+            return "MalformedConfiguration supplied configuration is not valid or missing"

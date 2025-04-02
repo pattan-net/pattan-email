@@ -11,15 +11,17 @@ class PattanEmail:
         if not config.api_key:
             raise MissingAPIKey
 
-        if self._purpose != 'transactional' and self._purpose != 'marketing':
+        if purpose != 'transactional' and purpose != 'marketing':
             raise InvalidPurpose
 
         self.api_key = config.api_key
         self._purpose = purpose
-        self.sg = SendGridAPIClient(api_key=self.api_key)
         self.unsubscribe_groups = config.unsubscribe_groups
         self.senders = config.senders
-        self.templates = config.templates
+        self.templates = config.email_templates
+
+        self.sg = SendGridAPIClient(api_key=self.api_key)
+
 
     def set_purpose(self, purpose):
         if purpose != 'marketing' and purpose != 'transactional':
@@ -29,69 +31,62 @@ class PattanEmail:
     def get_purpose(self):
         return self._purpose
 
-    def send_template_email(self, to_addr, subject, body, from_value='DEFAULT', template="DEFAULT",
+    def send_template_email(self, to_addr, subject, body, sender_key='DEFAULT', email_template_key="DEFAULT",
                             asm_group="DEFAULT"):
         '''
         This function is good to use when the email being sent is same for each recipient.
-        :param to_addr:
+        :param to_addr: email address or list of "address" dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
         :param subject:
         :param body:
-        :param from_value:
-        :param template:
+        :param sender_key: dict key for config.senders
+        :param email_template_key: dict key for config.email_templates
         :param asm_group:
         :return: SendGrid client response or throws an exception
         '''
+        if sender_key not in self.senders.keys():
+            raise MalformedConfiguration('Assigned sender is not defined in your configuration')
 
-        sender = None
-        sg_response = ''
-        if from_value and from_value.isnumeric():
-            sender_response = self.sg.client.senders._(from_value).get()
-            if sender_response.status_code == 200:
-                sender = json.loads(sender_response.body)
-        if not sender:
-            sender = self.senders['DEFAULT']
+        sender = self.senders[sender_key]
 
-        if from_value and False == from_value.isnumeric():
-            sender['nickname'] = None
-            sender['from'] = {'email': from_value}
-            sender['reply-to'] = from_value
+        # the to_addr can be a list of just a string of an email address.
+        if isinstance(to_addr, str):
+            to_addr = [{'name':to_addr, 'email':to_addr}]
 
         # For any future time when new capabilities need to be added, like attachments or categories:
         # https://github.com/sendgrid/sendgrid-python/blob/main/examples/mail/mail.py#L27
 
+        #@todo this is specific to the template used therefore this needs to be passed in.
         dynamic_template_data = {
-            'Sender_Name': sender['nickname'],
-            'Sender_Address': sender['address'],
-            'Sender_City': sender['city'],
-            'Sender_State': sender['state'],
-            'Sender_Zip': sender['zip'],
+            'Sender_Name': sender.nickname,
+            'Sender_Address': sender.address,
+            'Sender_City': sender.city,
+            'Sender_State': sender.state,
+            'Sender_Zip': sender.zip,
             'Message_Body': body,
             'Subject': subject,
         }
 
         personalizations = []
         for to_address in to_addr:
-            email, name = to_address
             personalizations.append({
-                'to': [{'name': name, 'email': email}],
+                'to': [to_address],
                 'dynamic_template_data': dynamic_template_data,
             })
 
-        from_email = {'email': sender['from']['email']}
-        if sender['nickname']:
-            from_email['name'] = sender['nickname']
+        from_email = {'email': sender.from_address.email}
+        if sender.nickname:
+            from_email['name'] = sender.nickname
 
         ip_pool_name = "marketing" if self._purpose == "marketing" else "transactional"
 
         asm = {
-            'group_id': self.unsubscribe_groups[asm_group]['group_id'],
+            'group_id': self.unsubscribe_groups['DEFAULT'].group_id,
             'groups_to_display': [
-                self.unsubscribe_groups['pattan unsubscribe']['group_id'],
-                self.unsubscribe_groups['SendGrid Tech Test Group']['group_id']
+                self.unsubscribe_groups['DEFAULT'].group_id
             ]
         }
 
-        template_id = self.templates[template]['sendgrid_template_id']
+        template_id = self.templates[email_template_key].id
 
         message = {
             'asm': asm,
@@ -107,13 +102,21 @@ class PattanEmail:
             raise MailSendFailure
         return sg_response
 
-    def send_personalized_template_email(self, personalization_list, template_id, from_value='no-reply@pattan.net'):
+    def send_personalized_template_email(self, personalization_list=None, template='DEFAULT', sender='DEFAULT'):
         """
         This function should be used when the email is unique for each recipient.
+        :param template:
+        :param sender:
+        :param template_id:
         :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
         :return:
         """
-        sender = self.senders['DEFAULT']
+        if personalization_list is None:
+            raise MalformedConfiguration('personalization_list can not be left blank, it defines who is being sent an email')
+
+        sender = self.senders[sender]
+        template_id = self.templates[template]['sendgrid_template_id']
+
         from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
 
         ip_pool_name = "Pattan_Marketing" if self._purpose == "marketing" else "pattan_transactional"

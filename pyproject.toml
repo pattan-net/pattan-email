@@ -28,5 +28,5 @@ Documentation = "https://github.com/pattan-net/pattan-email/docs"
 
 
 [build-system]
-requires = ['setuptools>=40.8.0', 'sendgrid>=6.10.0']
+requires = ['setuptools>=40.8.0', 'sendgrid>=6.10.0', 'certifi']
 build-backend = 'setuptools.build_meta'

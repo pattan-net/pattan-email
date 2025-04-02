@@ -18,8 +18,8 @@ def test_send_personalized_template_email():
     to_addr = [{'name':'markus weltin', 'email':'mweltin@pattan.net'}]
     response = emailer.send_template_email(to_addr, subject_body_str, subject_body_str)
 
-    personalization_list = [] # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/personalizations
-    response = emailer.send_personalized_template_email(personalization_list)
+    # personalization_list = [] # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/personalizations
+    # response = emailer.send_personalized_template_email(personalization_list)
 
     return response
 
@@ -44,4 +44,4 @@ def apiexampletest():
         print(e)
 
 if __name__ == "__main__":
-    apiexampletest()
+    test_send_personalized_template_email()

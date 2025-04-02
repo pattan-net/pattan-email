@@ -30,8 +30,8 @@ def apiexampletest():
 
 
     message = Mail(
-        from_email='mweltin@example.com',
-        to_emails='mweltin@pattan.com',
+        from_email='no-reply@pattan.net',
+        to_emails='mweltin@pattan.net',
         subject='Sending with Twilio SendGrid is Fun',
         html_content='<strong>and easy to do anywhere, even with Python</strong>')
     try:
@@ -41,7 +41,7 @@ def apiexampletest():
         print(response.body)
         print(response.headers)
     except Exception as e:
-        print(e.message)
+        print(e)
 
 if __name__ == "__main__":
     apiexampletest()

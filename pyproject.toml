@@ -26,7 +26,10 @@ Homepage = "https://github.com/pattan-net/pattan-email"
 Important = "https://www.youtube.com/watch?v=xvFZjo5PgG0"
 Documentation = "https://github.com/pattan-net/pattan-email/docs"
 
+[project.scripts]
+pecli = "cli.greet:greet"
+
 
 [build-system]
-requires = ['setuptools>=40.8.0', 'sendgrid>=6.10.0', 'certifi', 'pydantic']
+requires = ['setuptools>=40.8.0', 'sendgrid>=6.10.0', 'certifi', 'pydantic', 'click']
 build-backend = 'setuptools.build_meta'

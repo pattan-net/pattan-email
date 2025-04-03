@@ -46,5 +46,16 @@ def apiexampletest():
     except Exception as e:
         print(e)
 
+
+def api_test():
+    sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+    response = sg.client.ips.pools.get()
+    print(response.status_code)
+    print(response.body)
+    print(response.headers)
+
+
 if __name__ == "__main__":
-    test_send_personalized_template_email()
+    # test_send_personalized_template_email()
+    # apiexampletest()
+    api_test()

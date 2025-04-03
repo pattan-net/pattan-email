@@ -26,19 +26,6 @@ class MissingAPIKey(Exception):
             return "MissingAPIKey a sendgrid API key must be provided to create an instance this class"
 
 
-class InvalidPurpose(Exception):
-    def __init__(self, *args):
-        if args:
-            self.message = args[0]
-        else:
-            self.message = None
-
-    def __str__(self):
-        if self.message:
-            return "InvalidPurpose, {0} ".format(self.message)
-        else:
-            return "InvalidPurpose value must be either 'transactional' or 'marketing'"
-
 class MalformedConfiguration(Exception):
     def __init__(self, *args):
         if args:

@@ -1,38 +1,27 @@
 from sendgrid import SendGridAPIClient
 import json
-from .exceptions import MailSendFailure, MissingAPIKey, InvalidPurpose, MalformedConfiguration
+from .exceptions import MailSendFailure, MissingAPIKey, MalformedConfiguration
 
 
 class PattanEmail:
-    def __init__(self, config=None, purpose='transactional'):
+    def __init__(self, config=None ):
         if not config:
             raise MalformedConfiguration
 
         if not config.api_key:
             raise MissingAPIKey
 
-        if purpose != 'transactional' and purpose != 'marketing':
-            raise InvalidPurpose
-
         self.api_key = config.api_key
-        self._purpose = purpose
+        self.ip_pool = config.ip_pools["DEFAULT"].name
         self.unsubscribe_groups = config.unsubscribe_groups
         self.senders = config.senders
         self.templates = config.email_templates
-
         self.sg = SendGridAPIClient(api_key=self.api_key)
 
 
-    def set_purpose(self, purpose):
-        if purpose != 'marketing' and purpose != 'transactional':
-            raise InvalidPurpose
-        self._purpose = purpose
-
-    def get_purpose(self):
-        return self._purpose
 
     def send_template_email(self, to_addr, subject, body, sender_key='DEFAULT', email_template_key="DEFAULT",
-                            asm_group="DEFAULT"):
+                            asm_group="DEFAULT", ip_pool_key="DEFAULT"):
         '''
         This function is good to use when the email being sent is same for each recipient.
         :param to_addr: email address or list of "address" dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
@@ -49,6 +38,8 @@ class PattanEmail:
         sender = self.senders[sender_key]
 
         # the to_addr can be a list of just a string of an email address.
+        if isinstance(to_addr, str):
+            to_addr = [{'name': to_addr, 'email': to_addr}]
 
         # For any future time when new capabilities need to be added, like attachments or categories:
         # https://github.com/sendgrid/sendgrid-python/blob/main/examples/mail/mail.py#L27
@@ -61,12 +52,12 @@ class PattanEmail:
             'Sender_State': sender.state,
             'Sender_Zip': sender.zip,
             'Message_Body': body,
-            'Subject': "test subject",
+            'Subject': subject,
         }
 
         personalizations = []
         personalizations.append({
-            'to': [{'email':'mweltin@pattan.net'}],
+            'to': to_addr,
            'dynamic_template_data': dynamic_template_data,
        })
 
@@ -74,13 +65,10 @@ class PattanEmail:
         if sender.nickname:
             from_email['name'] = sender.nickname
 
-        ip_pool_name = "marketing" if self._purpose == "marketing" else "transactional"
-        ip_pool_name = "Pattan_Transactional" 
-
         asm = {
-            'group_id': self.unsubscribe_groups['DEFAULT'].group_id,
+            'group_id': self.unsubscribe_groups[asm_group].group_id,
             'groups_to_display': [
-                self.unsubscribe_groups['DEFAULT'].group_id
+                self.unsubscribe_groups[asm_group].group_id
             ]
         }
 
@@ -91,9 +79,8 @@ class PattanEmail:
             "personalizations": personalizations,
             "template_id": template_id,
             "asm": asm,
-            "ip_pool_name": ip_pool_name,
+            "ip_pool_name": self.ip_pool,
         }
-        print(message)
         try:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:

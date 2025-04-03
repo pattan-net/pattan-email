@@ -49,8 +49,6 @@ class PattanEmail:
         sender = self.senders[sender_key]
 
         # the to_addr can be a list of just a string of an email address.
-        if isinstance(to_addr, str):
-            to_addr = [{'name':to_addr, 'email':to_addr}]
 
         # For any future time when new capabilities need to be added, like attachments or categories:
         # https://github.com/sendgrid/sendgrid-python/blob/main/examples/mail/mail.py#L27
@@ -63,19 +61,19 @@ class PattanEmail:
             'Sender_State': sender.state,
             'Sender_Zip': sender.zip,
             'Message_Body': body,
-            'Subject': subject,
+            'Subject': "test subject",
         }
 
         personalizations = []
-        for to_address in to_addr:
-            personalizations.append({
-                'to': [to_address],
-                'dynamic_template_data': dynamic_template_data,
-            })
+        personalizations.append({
+            'to': [{'email':'mweltin@pattan.net'}],
+           'dynamic_template_data': dynamic_template_data,
+       })
 
-        from_email = {'email': sender.from_address.email}
-        if sender.nickname:
-            from_email['name'] = sender.nickname
+        # from_email = {'email': sender.from_address.email}
+        from_email = {"email": "ebp@pattan.net"}
+        # if sender.nickname:
+           # from_email['name'] = sender.nickname
 
         ip_pool_name = "marketing" if self._purpose == "marketing" else "transactional"
 
@@ -89,11 +87,11 @@ class PattanEmail:
         template_id = self.templates[email_template_key].id
 
         message = {
-            'asm': asm,
-            'from': from_email,
-            'ip_pool_name': ip_pool_name,
-            'template_id': template_id,
-            'personalizations': personalizations
+            "from": from_email,
+            "personalizations": personalizations,
+            "template_id": template_id,
+            #"asm": asm,
+            #"ip_pool_name": ip_pool_name,
         }
 
         try:

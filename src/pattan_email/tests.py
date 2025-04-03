@@ -21,6 +21,9 @@ def test_send_personalized_template_email():
     # personalization_list = [] # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/personalizations
     # response = emailer.send_personalized_template_email(personalization_list)
 
+    print(response.status_code)
+    print(response.body)
+    print(response.headers)
     return response
 
 

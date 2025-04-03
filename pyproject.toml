@@ -27,7 +27,7 @@ Important = "https://www.youtube.com/watch?v=xvFZjo5PgG0"
 Documentation = "https://github.com/pattan-net/pattan-email/docs"
 
 [project.scripts]
-pecli = "cli.greet:greet"
+pe = "cli.pe_cli:pe_cli"
 
 
 [build-system]

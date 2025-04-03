@@ -4,6 +4,7 @@ import click
 @click.pass_context
 def gc(ctx):
     """ get configuration information for patten_email class"""
+    click.echo(ctx.obj.get('api_key'))
     senders = ctx.invoke(gs)
     click.echo(senders)
     asm = ctx.invoke(ga)
@@ -25,11 +26,19 @@ def gs(ctx):
 def ga(ctx):
     """ get sendgird asms """
     response = ctx.obj['sg_client'].asm.suppressions.get()
-    click.echo(response.body)
+    return response.body
 
 @click.command()
 @click.pass_context
 def gt(ctx):
     """ get sendgird templates """
     response = ctx.obj['sg_client'].templates.get()
-    click.echo(response.body)
+    return response.body
+
+
+@click.command()
+@click.pass_context
+def gt(ctx):
+    """ get sendgird ip pools """
+    response = ctx.obj['sg_client'].ips.pools.get()
+    return response.body

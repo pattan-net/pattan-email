@@ -10,8 +10,13 @@ load_dotenv('../../.env')
 @click.pass_context
 def pe_cli(ctx):
     """CLI interface into the sendgrid backend to run export SENDGRID_API_KEY environment variable"""
-    sg = SendGridAPIClient(api_key=os.getenv('SENDGRID_API_KEY'))
-    ctx.obj = {'sg_client': sg.client}
+    api_key = os.getenv('SENDGRID_API_KEY', None)
+    if not api_key:
+        #@todo the key should be able to be supplied as an optional argument
+        click.echo("missing SENDGRID_API_KEY environment variable")
+        return
+    sg = SendGridAPIClient(api_key=api_key)
+    ctx.obj = {'sg_client': sg.client,'api_key': api_key}
 
 
 

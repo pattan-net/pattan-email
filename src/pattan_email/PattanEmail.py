@@ -70,12 +70,12 @@ class PattanEmail:
            'dynamic_template_data': dynamic_template_data,
        })
 
-        # from_email = {'email': sender.from_address.email}
-        from_email = {"email": "ebp@pattan.net"}
-        # if sender.nickname:
-           # from_email['name'] = sender.nickname
+        from_email = {'email': sender.from_address.email}
+        if sender.nickname:
+            from_email['name'] = sender.nickname
 
         ip_pool_name = "marketing" if self._purpose == "marketing" else "transactional"
+        ip_pool_name = "Pattan_Transactional" 
 
         asm = {
             'group_id': self.unsubscribe_groups['DEFAULT'].group_id,
@@ -90,10 +90,10 @@ class PattanEmail:
             "from": from_email,
             "personalizations": personalizations,
             "template_id": template_id,
-            #"asm": asm,
-            #"ip_pool_name": ip_pool_name,
+            "asm": asm,
+            "ip_pool_name": ip_pool_name,
         }
-
+        print(message)
         try:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:

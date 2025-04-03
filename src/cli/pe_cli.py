@@ -2,11 +2,11 @@ import os
 import click
 from sendgrid import SendGridAPIClient
 from dotenv import load_dotenv
-from cli.get_config import gc, gs
+from cli.get_config import gc, gs, ga, gt
 
 load_dotenv('../../.env')
 
-@click.group(invoke_without_command=True)
+@click.group()
 @click.pass_context
 def pe_cli(ctx):
     """CLI interface into the sendgrid backend to run export SENDGRID_API_KEY environment variable"""
@@ -17,6 +17,8 @@ def pe_cli(ctx):
 
 pe_cli.add_command(gc)
 pe_cli.add_command(gs)
+pe_cli.add_command(ga)
+pe_cli.add_command(gt)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import os
 import click
 from sendgrid import SendGridAPIClient
 from dotenv import load_dotenv
-from cli.get_config import gc, gs, ga, gt
+from cli.get_config import gc, gs, ga, gt, gtd
 
 load_dotenv('../../.env')
 
@@ -24,6 +24,7 @@ pe_cli.add_command(gc)
 pe_cli.add_command(gs)
 pe_cli.add_command(ga)
 pe_cli.add_command(gt)
+pe_cli.add_command(gtd)
 
 
 if __name__ == '__main__':

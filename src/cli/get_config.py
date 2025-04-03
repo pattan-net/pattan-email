@@ -42,3 +42,13 @@ def gt(ctx):
     """ get sendgird ip pools """
     response = ctx.obj['sg_client'].ips.pools.get()
     return response.body
+
+@click.command()
+@click.argument('template_id')
+@click.pass_context
+def gtd(ctx, template_id):
+    """ get all info about a specific template """
+    response = ctx.obj['sg_client'].templates._(template_id).get()
+    click.echo(response.body)
+    click.echo(template_id)
+    return response.body

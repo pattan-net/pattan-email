@@ -5,7 +5,7 @@ import re
 @click.command()
 @click.pass_context
 def gc(ctx):
-    """ get configuration information for patten_email class"""
+    """ get and formate configuration information so its suitable for consumption by the patten_email class"""
     senders = ctx.invoke(gs)
     ip_pools = ctx.invoke(gi)
     asm = ctx.invoke(ga)
@@ -72,7 +72,7 @@ def gs(ctx):
 @click.command()
 @click.pass_context
 def ga(ctx):
-    """ get sendgird asms """
+    """ get sendgird asms (unsubscribe groups)"""
     params = {}
     response = ctx.obj['sg_client'].asm.groups.get(query_params=params)
     return json.loads(response.body.decode('utf-8'))
@@ -80,7 +80,7 @@ def ga(ctx):
 @click.command()
 @click.pass_context
 def gt(ctx):
-    """ get sendgird templates """
+    """ get sendgird dynamic templates """
     params = {'generations': 'dynamic'}
     response = ctx.obj['sg_client'].templates.get(query_params=params)
     return json.loads(response.body.decode('utf-8'))['templates']
@@ -97,7 +97,7 @@ def gi(ctx):
 @click.argument('template_id')
 @click.pass_context
 def gtd(ctx, template_id):
-    """ get all info about a specific template """
+    """ get details for a specific template """
     response = ctx.obj['sg_client'].templates._(template_id).get()
     body = json.loads(response.body.decode('utf-8'))
     # get the active version of the template
@@ -118,13 +118,14 @@ def gtd(ctx, template_id):
 @click.argument('template_id')
 @click.pass_context
 def gtv(ctx, template_id):
-    """ get all info about a specific template """
+    """ get the variables defined in a specific template. """
 
     body = ctx.invoke(gtd, template_id = template_id)
     if not body['template']:
         click.echo('No active template version found')
         return []
     # Regular expression to find all Mustache variables
+    # @todo the parsing could be better also variables in the subject line are not detected.
     variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['plain_content'])
     try:
         # these are defined with the asm config, @todo find a better mustache pattern the extra '{' is weird

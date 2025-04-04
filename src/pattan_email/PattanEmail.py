@@ -3,11 +3,15 @@ from .exceptions import MailSendFailure, MalformedConfiguration
 from pattan_email.models import Config
 
 class PattanEmail:
+    """
+    Useful SendGrid API abstraction for sending emails.
+    It includes a command line interface to construct the configuration file by querying the SendGrid API directly.
+    """
     def __init__(self, config_json=None ):
         if not config_json:
             raise MalformedConfiguration
         try:
-            # pydantic validator makes sure each property is defined and default value
+            # pydantic validator makes sure each property is defined and has a default value set
             self.config = Config.model_validate_json(config_json)
         except Exception as e:
             raise MalformedConfiguration
@@ -23,17 +27,16 @@ class PattanEmail:
 
     def send_template_email(self, to_addr, dynamic_template_data=None,
                             sender='DEFAULT', email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT"):
-        '''
-        This function is good to use when the same email being sent to one or more recipients.
-        :param email_template:
-        :param sender:
-        :param dynamic_template_data:
-        :param to_addr: email address or list of "address" dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
-        :param subject:
-        :param body:
-        :param asm_group:
+        """
+        Send the same email to one or more recipients.
+        :param to_addr: email address dict or list of address dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
+        :param dynamic_template_data: dict that defines all the variables used in the selected email_template
+        :param email_template: string Name of the template you want to use e.g. "PaTTAN Standard Template"
+        :param sender: string Name of the sender email address e.g. "no-reply@PaTTAN"
+        :param asm_group: string Name of the asm group (a.k.a. unsubscribe group)  e.g. "SendGrid Tech Test Group"
+        :param ip_pool: : string Name of the ip_pool e.g. "Pattan_Transactional"
         :return: SendGrid client response or throws an exception
-        '''
+        """
 
         if sender not in self.senders.keys():
             raise MalformedConfiguration('Assigned sender is not defined in your configuration')
@@ -44,13 +47,13 @@ class PattanEmail:
         if isinstance(to_addr, str):
             to_addr = [{'name': to_addr, 'email': to_addr}]
 
-        personalizations = []
-        personalizations.append({
+        personalizations = [{
             'to': to_addr,
-            'dynamic_template_data': dynamic_template_data
-        })
+            'dynamic_template_data': dynamic_template_data.deep_copy(),
+        }]
 
         from_email = {'email': sender.from_address.email}
+
         if sender.nickname:
             from_email['name'] = sender.nickname
 
@@ -70,6 +73,7 @@ class PattanEmail:
             "asm": asm,
             "ip_pool_name": self.ip_pool[ip_pool].name,
         }
+
         try:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:

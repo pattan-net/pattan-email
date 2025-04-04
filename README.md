@@ -5,23 +5,17 @@ with PaTTAN specific configurations.
 
 
 ## Quick start
-1. Add pattan-email the following line to your requirements.txt
-    pattan-email @ git+ssh://git@github.com/pattan-net/pattan-email.git
+1. installation
+> pip install pattan-email
 
-2. Usage
-    from pattan_email.PattanEmail import PattanEmail
-    ....
-    mailer = PattanEmail( api_key={SENDGRID API KEY}, [purpose='transactional' or 'marketing'])
-
-
-## Details
-1. When testing you can specify a specific commit in your requirements.text
-    pattan-email @ git+ssh://git@github.com/pattan-net/pattan-email.git@6c5043126464a2034b402f59b0c382469801ef5e
-2. The pattan-email package defines the sendgrid package as a dependency.  Therefore the sendgrid
-package does not need to be defined in the requirements.txt file of the application using this package
-3. If you made a change to this repo, you can not deploy on top of an already running instance. You 
-should provision one from scratch. 
-
+2. Create an environment variable 'SENDGRID_API_KEY' set its value to your sendgrid api key
+>  export SENDGRID_API_KEY="YOUR SENDGRID API KEY"
+3. Generate config by redirecting this output to a file or copy/paste to a file.  Keep this file out of your repo as it will contain your sendgrid api key
+> pe gc 
+4. Use the output from the command in step three to initialize the PattanEmail class.
+>    from pattan_email.PattanEmail import PattanEmail 
+>    ... {define PATTAN_EMAIL_CONFIG_JSON with the contents of the step 3 output}
+>    emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
 
 
 ## Resources

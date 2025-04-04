@@ -35,8 +35,15 @@ def gc(ctx):
     unsubscribe_groups_config['DEFAULT'] = asm[0]
     auto_generated_config_dict['unsubscribe_groups'] = unsubscribe_groups_config
 
-
-    auto_generated_config_dict['email_templates'] = json.loads(templates.decode('utf-8'))
+    templates_config = {}
+    for template in templates:
+        templates_config[template['name']]= {}
+        templates_config[template['name']]['id'] = template['id']
+        templates_config[template['name']]['name'] = template['name']
+        isolated_template_variables = ctx.invoke(gtv, template_id = template['id'])
+        templates_config[template['name']]['variables'] = isolated_template_variables
+    templates_config['DEFAULT'] = templates_config[next(iter(templates_config))]
+    auto_generated_config_dict['email_templates'] = templates_config
 
     click.echo(json.dumps(auto_generated_config_dict))
 
@@ -65,7 +72,7 @@ def gt(ctx):
     """ get sendgird templates """
     params = {'generations': 'dynamic'}
     response = ctx.obj['sg_client'].templates.get(query_params=params)
-    return json.loads(response.body.decode('utf-8'))
+    return json.loads(response.body.decode('utf-8'))['templates']
 
 
 @click.command()
@@ -89,8 +96,8 @@ def gtd(ctx, template_id):
             template = version
             break
     if not template:
-        click.echo('template not found')
-        return
+        #@todo convert logger
+        click.echo('No active template version found')
     del(body['versions'])
     body['template'] = template
 
@@ -103,8 +110,9 @@ def gtv(ctx, template_id):
     """ get all info about a specific template """
 
     body = ctx.invoke(gtd, template_id = template_id)
-    # get the active version of the template
-
+    if not body['template']:
+        click.echo('No active template version found')
+        return []
     # Regular expression to find all Mustache variables
     variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['plain_content'])
     try:

@@ -1,29 +1,30 @@
 from sendgrid import SendGridAPIClient
-import json
-from .exceptions import MailSendFailure, MissingAPIKey, MalformedConfiguration
-
+from .exceptions import MailSendFailure, MalformedConfiguration
+from pattan_email.models import Config
 
 class PattanEmail:
-    def __init__(self, config=None ):
-        if not config:
+    def __init__(self, config_json=None ):
+        if not config_json:
+            raise MalformedConfiguration
+        try:
+            # pydantic validator makes sure each property is defined and default value
+            self.config = Config.model_validate_json(config_json)
+        except Exception as e:
             raise MalformedConfiguration
 
-        if not config.api_key:
-            raise MissingAPIKey
-
-        self.api_key = config.api_key
-        self.ip_pool = config.ip_pools["DEFAULT"].name
-        self.unsubscribe_groups = config.unsubscribe_groups
-        self.senders = config.senders
-        self.templates = config.email_templates
+        self.api_key = self.config.api_key
+        self.ip_pool = self.config.ip_pools
+        self.unsubscribe_groups = self.config.unsubscribe_groups
+        self.senders = self.config.senders
+        self.templates = self.config.email_templates
         self.sg = SendGridAPIClient(api_key=self.api_key)
 
 
 
     def send_template_email(self, to_addr, dynamic_template_data=None,
-                            sender='DEFAULT', email_template="DEFAULT", asm_group="DEFAULT", ip_pool_key="DEFAULT"):
+                            sender='DEFAULT', email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT"):
         '''
-        This function is good to use when the email being sent is same for each recipient.
+        This function is good to use when the same email being sent to one or more recipients.
         :param email_template:
         :param sender:
         :param dynamic_template_data:
@@ -67,49 +68,8 @@ class PattanEmail:
             "personalizations": personalizations,
             "template_id": template_id,
             "asm": asm,
-            "ip_pool_name": self.ip_pool,
+            "ip_pool_name": self.ip_pool[ip_pool].name,
         }
-        try:
-            sg_response = self.sg.client.mail.send.post(request_body=message)
-        except Exception as e:
-            raise MailSendFailure
-        return sg_response
-
-    def send_personalized_template_email(self, personalization_list=None, template='DEFAULT', sender='DEFAULT'):
-        """
-        This function should be used when the email is unique for each recipient.
-        :param template:
-        :param sender:
-        :param template_id:
-        :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
-        :return:
-        """
-        if personalization_list is None:
-            raise MalformedConfiguration('personalization_list can not be left blank, it defines who is being sent an email')
-
-        sender = self.senders[sender]
-        template_id = self.templates[template]['sendgrid_template_id']
-
-        from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
-
-        ip_pool_name = "Pattan_Marketing" if self._purpose == "marketing" else "pattan_transactional"
-
-        asm = {
-            'group_id': self.unsubscribe_groups['pattan unsubscribe']['group_id'],
-            'groups_to_display': [
-                self.unsubscribe_groups['pattan unsubscribe']['group_id'],
-                self.unsubscribe_groups['SendGrid Tech Test Group']['group_id']
-            ]
-        }
-
-        message = {
-            'asm': asm,
-            'from': from_email,
-            'ip_pool_name': ip_pool_name,
-            'template_id': template_id,
-            'personalizations': personalization_list
-        }
-
         try:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:

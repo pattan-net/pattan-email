@@ -33,16 +33,18 @@ class IpPool(BaseModel):
 class Config(BaseModel):
     api_key: str
     senders: Dict[str, Sender]
+    ip_pools: Dict[str, IpPool]
     unsubscribe_groups: Dict[str, UnSubscribeGroup]
     email_templates: Dict[str, EmailTemplate]
-    ip_pools: Dict[str, IpPool]
 
     @model_validator(mode='before')
     def check_default_key(cls, values):
-        if 'DEFAULT' not in values['email_templates']:
-            raise ValueError("The 'DEFAULT' key missing from the 'email_templates' list.")
         if 'DEFAULT' not in values['senders']:
-            raise ValueError("The 'DEFAULT' key missing from the 'senders' list.")
+            raise ValueError("Senders missing a default")
+        if 'DEFAULT' not in values['ip_pools']:
+            raise ValueError("ip_pools missing a default")
         if 'DEFAULT' not in values['unsubscribe_groups']:
-            raise ValueError("The 'DEFAULT' key missing from the 'unsubscribe_groups' list.")
+            raise ValueError("unsubscribe_groups missing a default")
+        if 'DEFAULT' not in values['email_templates']:
+            raise ValueError("email_templates missing a default")
         return values

@@ -1,28 +1,28 @@
+import json
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from pattan_email.PattanEmail import PattanEmail
 from dotenv import load_dotenv
-from pattan_email.models import Config
+
 
 load_dotenv('../../.env')
 
 
-PATTAN_EMAIL_CONFIG_JSON = os.environ.get('PATTAN_EMAIL_CONFIG_JSON', '')
+PATTAN_EMAIL_CONFIG_JSON = json.dumps(json.loads(os.environ.get('PATTAN_EMAIL_CONFIG', None)))
 
 def test_send_personalized_template_email():
 
-    pattan_email_config = Config.model_validate_json(PATTAN_EMAIL_CONFIG_JSON)
-    emailer = PattanEmail(pattan_email_config)
+    emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
     to_addr = [{'name':'markus weltin', 'email':'mweltin@pattan.net'}]
     body = "body of test email"
     subject = "subject of test email"
     dynamic_template_data = {
-        'Sender_Name': pattan_email_config.senders['DEFAULT'].nickname,
-        'Sender_Address': pattan_email_config.senders['DEFAULT'].address,
-        'Sender_City': pattan_email_config.senders['DEFAULT'].city,
-        'Sender_State': pattan_email_config.senders['DEFAULT'].state,
-        'Sender_Zip': pattan_email_config.senders['DEFAULT'].zip,
+        'Sender_Name': emailer.senders['DEFAULT'].nickname,
+        'Sender_Address': emailer.senders['DEFAULT'].address,
+        'Sender_City': emailer.senders['DEFAULT'].city,
+        'Sender_State': emailer.senders['DEFAULT'].state,
+        'Sender_Zip': emailer.senders['DEFAULT'].zip,
         'Message_Body': body,
         'Subject': subject,
     }

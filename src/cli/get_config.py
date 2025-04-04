@@ -1,5 +1,6 @@
 import click
 import json
+import re
 
 @click.command()
 @click.pass_context
@@ -42,7 +43,9 @@ def ga(ctx):
 @click.pass_context
 def gt(ctx):
     """ get sendgird templates """
-    response = ctx.obj['sg_client'].templates.get()
+    params = {'generations': 'dynamic'}
+    response = ctx.obj['sg_client'].templates.get(query_params=params)
+    click.echo(response.body.decode('utf-8'))
     return response.body
 
 
@@ -59,6 +62,23 @@ def gi(ctx):
 def gtd(ctx, template_id):
     """ get all info about a specific template """
     response = ctx.obj['sg_client'].templates._(template_id).get()
-    click.echo(response.body)
-    click.echo(template_id)
+    body = json.loads(response.body.decode('utf-8'))
+    # get the active version of the template
+    template = None
+    for version in body['versions']:
+        if version['active'] == 1:
+            template = version['plain_content']
+            break
+    if not template:
+        click.echo('template not found')
+        return
+    # Regular expression to find all Mustache variables
+    variables = re.findall(r'{{\s*([^}]+)\s*}}', template)
+    try:
+        # these are defined with the asm config, @todo find a better mustache pattern the extra '{' is weird
+        variables.remove('{unsubscribe')
+        variables.remove('{unsubscribe_preferences')
+    except:
+        pass
+    click.echo(variables)
     return response.body

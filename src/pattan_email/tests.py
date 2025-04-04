@@ -14,20 +14,20 @@ def test_send_personalized_template_email():
 
     pattan_email_config = Config.model_validate_json(PATTAN_EMAIL_CONFIG_JSON)
     emailer = PattanEmail(pattan_email_config)
-    subject_body_str = 'pattan email package test of send template email using defaults'
     to_addr = [{'name':'markus weltin', 'email':'mweltin@pattan.net'}]
     body = "body of test email"
     subject = "subject of test email"
-    dynamic_template_data = {
-        'Sender_Name': pattan_email_config.senders["DEFAULT"]['nickname'],
-        'Sender_Address': pattan_email_config.sender.address,
-        'Sender_City': pattan_email_config.sender.city,
-        'Sender_State': pattan_email_config.sender.state,
-        'Sender_Zip': pattan_email_config.sender.zip,
+    dynamic_template_data = [{
+        'Sender_Name': pattan_email_config.senders['DEFAULT'].nickname,
+        'Sender_Address': pattan_email_config.senders['DEFAULT'].address,
+        'Sender_City': pattan_email_config.senders['DEFAULT'].city,
+        'Sender_State': pattan_email_config.senders['DEFAULT'].state,
+        'Sender_Zip': pattan_email_config.senders['DEFAULT'].zip,
         'Message_Body': body,
         'Subject': subject,
-    }
-    response = emailer.send_template_email(to_addr, subject_body_str, subject_body_str, dynamic_template_data )
+    }]
+
+    response = emailer.send_template_email(to_addr, dynamic_template_data )
 
     # personalization_list = [] # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/personalizations
     # response = emailer.send_personalized_template_email(personalization_list)

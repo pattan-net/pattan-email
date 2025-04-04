@@ -20,37 +20,41 @@ class PattanEmail:
 
 
 
-    def send_template_email(self, to_addr, subject, body, sender_key='DEFAULT', email_template_key="DEFAULT",
-                            dynamic_template_data=None, asm_group="DEFAULT", ip_pool_key="DEFAULT"):
+    def send_template_email(self, to_addr, dynamic_template_data=None,
+                            sender='DEFAULT', email_template="DEFAULT", asm_group="DEFAULT", ip_pool_key="DEFAULT"):
         '''
         This function is good to use when the email being sent is same for each recipient.
+        :param email_template:
+        :param sender:
+        :param dynamic_template_data:
         :param to_addr: email address or list of "address" dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
         :param subject:
         :param body:
-        :param sender_key: dict key for config.senders
-        :param email_template_key: dict key for config.email_templates
         :param asm_group:
         :return: SendGrid client response or throws an exception
         '''
-        if sender_key not in self.senders.keys():
+
+        if sender not in self.senders.keys():
             raise MalformedConfiguration('Assigned sender is not defined in your configuration')
 
-        sender = self.senders[sender_key]
+        sender = self.senders[sender]
 
         # the to_addr can be a list of just a string of an email address.
         if isinstance(to_addr, str):
             to_addr = [{'name': to_addr, 'email': to_addr}]
 
-        # For any future time when new capabilities need to be added, like attachments or categories:
-        # https://github.com/sendgrid/sendgrid-python/blob/main/examples/mail/mail.py#L27
+        if isinstance(dynamic_template_data, dict):
+            dynamic_template_data = [dynamic_template_data]
 
-
+        if len(dynamic_template_data) != len(to_addr):
+            raise MailSendFailure('Number of recipients (to_addr) does not mach the number of messages (dynamic_template_data) ')
 
         personalizations = []
-        personalizations.append({
-            'to': to_addr,
-           'dynamic_template_data': dynamic_template_data,
-       })
+        for idx, addr in enumerate(to_addr):
+            personalizations.append({
+                'name': addr,
+                'dynamic_template_data': dynamic_template_data[idx]
+            })
 
         from_email = {'email': sender.from_address.email}
         if sender.nickname:
@@ -63,7 +67,7 @@ class PattanEmail:
             ]
         }
 
-        template_id = self.templates[email_template_key].id
+        template_id = self.templates[email_template].id
 
         message = {
             "from": from_email,

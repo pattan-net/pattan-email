@@ -1,6 +1,6 @@
 [project]
 name = "pattan-sendgrid"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
   { name="Markus Weltin", email="mweltin@pattan.net" },
 ]
@@ -23,7 +23,6 @@ keywords = ["pattan", "sendgrid", ]
 
 [project.urls]
 Homepage = "https://github.com/pattan-net/pattan-email"
-Important = "https://www.youtube.com/watch?v=xvFZjo5PgG0"
 Documentation = "https://github.com/pattan-net/pattan-email/docs"
 
 [project.scripts]

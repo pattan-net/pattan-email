@@ -1,10 +1,8 @@
 import os
 import click
 from sendgrid import SendGridAPIClient
-from dotenv import load_dotenv
 from cli.get_config import gc, gs, ga, gt, gtd, gi
 
-load_dotenv('../../.env')
 
 @click.group()
 @click.pass_context

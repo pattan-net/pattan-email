@@ -7,15 +7,35 @@ import re
 def gc(ctx):
     """ get configuration information for patten_email class"""
     senders = ctx.invoke(gs)
+    ip_pools = ctx.invoke(gi)
     asm = ctx.invoke(ga)
     templates = ctx.invoke(gt)
-    ip_pools= ctx.invoke(gi)
 
     auto_generated_config_dict = {}
     auto_generated_config_dict['api_key'] = ctx.obj.get('api_key')
-    auto_generated_config_dict['senders'] = json.loads(senders.decode('utf-8'))
-    auto_generated_config_dict['ip_pools'] = json.loads(ip_pools.decode('utf-8'))
-    auto_generated_config_dict['unsubscribe_groups'] = json.loads(asm.decode('utf-8'))
+
+
+    sender_config = {}
+    for sender in senders:
+        sender_config[sender['nickname']] = sender
+    sender_config['DEFAULT'] = senders[0]
+    auto_generated_config_dict['senders'] = sender_config
+
+
+    ip_pool_config = {}
+    for ip_pool in ip_pools:
+        ip_pool_config[ip_pool['name']] = ip_pool
+    ip_pool_config['DEFAULT'] = ip_pools[0]
+    auto_generated_config_dict['ip_pools'] = ip_pool_config
+
+
+    unsubscribe_groups_config = {}
+    for unsubscribe_group in asm:
+        unsubscribe_groups_config[unsubscribe_group['name']] = unsubscribe_group
+    unsubscribe_groups_config['DEFAULT'] = asm[0]
+    auto_generated_config_dict['unsubscribe_groups'] = unsubscribe_groups_config
+
+
     auto_generated_config_dict['email_templates'] = json.loads(templates.decode('utf-8'))
 
     click.echo(json.dumps(auto_generated_config_dict))
@@ -28,7 +48,7 @@ def gc(ctx):
 def gs(ctx):
     """ get sendgird senders """
     response = ctx.obj['sg_client'].senders.get()
-    return response.body
+    return json.loads(response.body.decode('utf-8'))
 
 
 @click.command()
@@ -37,7 +57,7 @@ def ga(ctx):
     """ get sendgird asms """
     params = {}
     response = ctx.obj['sg_client'].asm.groups.get(query_params=params)
-    return response.body
+    return json.loads(response.body.decode('utf-8'))
 
 @click.command()
 @click.pass_context
@@ -45,8 +65,7 @@ def gt(ctx):
     """ get sendgird templates """
     params = {'generations': 'dynamic'}
     response = ctx.obj['sg_client'].templates.get(query_params=params)
-    click.echo(response.body.decode('utf-8'))
-    return response.body
+    return json.loads(response.body.decode('utf-8'))
 
 
 @click.command()
@@ -54,7 +73,7 @@ def gt(ctx):
 def gi(ctx):
     """ get sendgird ip pools """
     response = ctx.obj['sg_client'].ips.pools.get()
-    return response.body
+    return json.loads(response.body.decode('utf-8'))
 
 @click.command()
 @click.argument('template_id')
@@ -67,18 +86,31 @@ def gtd(ctx, template_id):
     template = None
     for version in body['versions']:
         if version['active'] == 1:
-            template = version['plain_content']
+            template = version
             break
     if not template:
         click.echo('template not found')
         return
+    del(body['versions'])
+    body['template'] = template
+
+    return body
+
+@click.command()
+@click.argument('template_id')
+@click.pass_context
+def gtv(ctx, template_id):
+    """ get all info about a specific template """
+
+    body = ctx.invoke(gtd, template_id = template_id)
+    # get the active version of the template
+
     # Regular expression to find all Mustache variables
-    variables = re.findall(r'{{\s*([^}]+)\s*}}', template)
+    variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['plain_content'])
     try:
         # these are defined with the asm config, @todo find a better mustache pattern the extra '{' is weird
         variables.remove('{unsubscribe')
         variables.remove('{unsubscribe_preferences')
     except:
         pass
-    click.echo(variables)
-    return response.body
+    return variables

@@ -17,7 +17,7 @@ def test_send_personalized_template_email():
     to_addr = [{'name':'markus weltin', 'email':'mweltin@pattan.net'}]
     body = "body of test email"
     subject = "subject of test email"
-    dynamic_template_data = [{
+    dynamic_template_data = {
         'Sender_Name': pattan_email_config.senders['DEFAULT'].nickname,
         'Sender_Address': pattan_email_config.senders['DEFAULT'].address,
         'Sender_City': pattan_email_config.senders['DEFAULT'].city,
@@ -25,7 +25,7 @@ def test_send_personalized_template_email():
         'Sender_Zip': pattan_email_config.senders['DEFAULT'].zip,
         'Message_Body': body,
         'Subject': subject,
-    }]
+    }
 
     response = emailer.send_template_email(to_addr, dynamic_template_data )
 

@@ -43,27 +43,20 @@ class PattanEmail:
         if isinstance(to_addr, str):
             to_addr = [{'name': to_addr, 'email': to_addr}]
 
-        if isinstance(dynamic_template_data, dict):
-            dynamic_template_data = [dynamic_template_data]
-
-        if len(dynamic_template_data) != len(to_addr):
-            raise MailSendFailure('Number of recipients (to_addr) does not mach the number of messages (dynamic_template_data) ')
-
         personalizations = []
-        for idx, addr in enumerate(to_addr):
-            personalizations.append({
-                'name': addr,
-                'dynamic_template_data': dynamic_template_data[idx]
-            })
+        personalizations.append({
+            'to': to_addr,
+            'dynamic_template_data': dynamic_template_data
+        })
 
         from_email = {'email': sender.from_address.email}
         if sender.nickname:
             from_email['name'] = sender.nickname
 
         asm = {
-            'group_id': self.unsubscribe_groups[asm_group].group_id,
+            'group_id': self.unsubscribe_groups[asm_group].id,
             'groups_to_display': [
-                self.unsubscribe_groups[asm_group].group_id
+                self.unsubscribe_groups[asm_group].id
             ]
         }
 

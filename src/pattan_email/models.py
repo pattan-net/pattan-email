@@ -1,27 +1,31 @@
 from pydantic import BaseModel, model_validator
-from typing import Dict
+from typing import Dict, List
 
 
 class From(BaseModel):
     email: str
+    name: str
 
 
 class Sender(BaseModel):
     from_address: From
     nickname: str
-    reply_to: str
+    reply_to: From
     address: str
+    address_2: str
     city: str
     state: str
     zip: str
 
 
 class UnSubscribeGroup(BaseModel):
-    group_id: int
+    id: int
 
 
 class EmailTemplate(BaseModel):
     id: str
+    name: str
+    variables: List[str]
 
 class IpPool(BaseModel):
     name: str

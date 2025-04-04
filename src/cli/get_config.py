@@ -17,22 +17,32 @@ def gc(ctx):
 
     sender_config = {}
     for sender in senders:
+        del sender['updated_at']
+        del sender['created_at']
+        del sender['locked']
+        del sender['id']
+        del sender['verified']
+        del sender['country']
         sender_config[sender['nickname']] = sender
-    sender_config['DEFAULT'] = senders[0]
+        sender_config[sender['nickname']]['from_address'] = sender.pop('from')
+    #@todo the default key (i.e. no-reply@PaTTAN) should be passed in
+    sender_config['DEFAULT'] = sender_config['no-reply@PaTTAN']
     auto_generated_config_dict['senders'] = sender_config
 
 
     ip_pool_config = {}
     for ip_pool in ip_pools:
         ip_pool_config[ip_pool['name']] = ip_pool
-    ip_pool_config['DEFAULT'] = ip_pools[0]
+    ip_pool_config['DEFAULT'] = ip_pool_config['Pattan_Transactional']
     auto_generated_config_dict['ip_pools'] = ip_pool_config
 
 
     unsubscribe_groups_config = {}
     for unsubscribe_group in asm:
-        unsubscribe_groups_config[unsubscribe_group['name']] = unsubscribe_group
-    unsubscribe_groups_config['DEFAULT'] = asm[0]
+        unsubscribe_groups_config[unsubscribe_group['name']] = {}
+        unsubscribe_groups_config[unsubscribe_group['name']]['id'] = unsubscribe_group['id']
+        # @todo the default key (i.e. SendGrid Tech Test Group) should be passed in
+    unsubscribe_groups_config['DEFAULT'] = unsubscribe_groups_config['SendGrid Tech Test Group']
     auto_generated_config_dict['unsubscribe_groups'] = unsubscribe_groups_config
 
     templates_config = {}
@@ -42,7 +52,8 @@ def gc(ctx):
         templates_config[template['name']]['name'] = template['name']
         isolated_template_variables = ctx.invoke(gtv, template_id = template['id'])
         templates_config[template['name']]['variables'] = isolated_template_variables
-    templates_config['DEFAULT'] = templates_config[next(iter(templates_config))]
+    # @todo the default key (i.e. Pattan Standard Template) should be passed in
+    templates_config['DEFAULT'] = templates_config['Pattan Standard Template']
     auto_generated_config_dict['email_templates'] = templates_config
 
     click.echo(json.dumps(auto_generated_config_dict))

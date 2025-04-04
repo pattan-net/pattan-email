@@ -16,7 +16,18 @@ def test_send_personalized_template_email():
     emailer = PattanEmail(pattan_email_config)
     subject_body_str = 'pattan email package test of send template email using defaults'
     to_addr = [{'name':'markus weltin', 'email':'mweltin@pattan.net'}]
-    response = emailer.send_template_email(to_addr, subject_body_str, subject_body_str)
+    body = "body of test email"
+    subject = "subject of test email"
+    dynamic_template_data = {
+        'Sender_Name': pattan_email_config.senders["DEFAULT"]['nickname'],
+        'Sender_Address': pattan_email_config.sender.address,
+        'Sender_City': pattan_email_config.sender.city,
+        'Sender_State': pattan_email_config.sender.state,
+        'Sender_Zip': pattan_email_config.sender.zip,
+        'Message_Body': body,
+        'Subject': subject,
+    }
+    response = emailer.send_template_email(to_addr, subject_body_str, subject_body_str, dynamic_template_data )
 
     # personalization_list = [] # https://www.twilio.com/docs/sendgrid/for-developers/sending-email/personalizations
     # response = emailer.send_personalized_template_email(personalization_list)
@@ -56,6 +67,6 @@ def api_test():
 
 
 if __name__ == "__main__":
-    # test_send_personalized_template_email()
+    test_send_personalized_template_email()
     # apiexampletest()
-    api_test()
+    # api_test()

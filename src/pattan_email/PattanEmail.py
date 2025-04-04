@@ -21,7 +21,7 @@ class PattanEmail:
 
 
     def send_template_email(self, to_addr, subject, body, sender_key='DEFAULT', email_template_key="DEFAULT",
-                            asm_group="DEFAULT", ip_pool_key="DEFAULT"):
+                            dynamic_template_data=None, asm_group="DEFAULT", ip_pool_key="DEFAULT"):
         '''
         This function is good to use when the email being sent is same for each recipient.
         :param to_addr: email address or list of "address" dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
@@ -44,16 +44,7 @@ class PattanEmail:
         # For any future time when new capabilities need to be added, like attachments or categories:
         # https://github.com/sendgrid/sendgrid-python/blob/main/examples/mail/mail.py#L27
 
-        #@todo this is specific to the template used therefore this needs to be passed in.
-        dynamic_template_data = {
-            'Sender_Name': sender.nickname,
-            'Sender_Address': sender.address,
-            'Sender_City': sender.city,
-            'Sender_State': sender.state,
-            'Sender_Zip': sender.zip,
-            'Message_Body': body,
-            'Subject': subject,
-        }
+
 
         personalizations = []
         personalizations.append({

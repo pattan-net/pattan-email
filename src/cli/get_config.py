@@ -6,10 +6,10 @@ import re
 @click.pass_context
 def gc(ctx):
     """ get and formate configuration information so its suitable for consumption by the patten_email class"""
-    senders = ctx.invoke(gs)
-    ip_pools = ctx.invoke(gi)
-    asm = ctx.invoke(ga)
-    templates = ctx.invoke(gt)
+    senders = ctx.invoke(gs, dump_std=False)
+    ip_pools = ctx.invoke(gi, dump_std=False)
+    asm = ctx.invoke(ga, dump_std=False)
+    templates = ctx.invoke(gt, dump_std=False)
 
     auto_generated_config_dict = {}
     auto_generated_config_dict['api_key'] = ctx.obj.get('api_key')
@@ -62,41 +62,59 @@ def gc(ctx):
 
 
 @click.command()
+@click.option('--dump-std', default=True )
 @click.pass_context
-def gs(ctx):
+def gs(ctx, dump_std):
     """ get sendgird senders """
     response = ctx.obj['sg_client'].senders.get()
-    return json.loads(response.body.decode('utf-8'))
+    body = response.body.decode('utf-8')
+    if dump_std:
+        click.echo(body)
+    return json.loads(body)
 
 
 @click.command()
+@click.option('--dump-std', default=True )
 @click.pass_context
-def ga(ctx):
+def ga(ctx, dump_std):
     """ get sendgird asms (unsubscribe groups)"""
     params = {}
     response = ctx.obj['sg_client'].asm.groups.get(query_params=params)
-    return json.loads(response.body.decode('utf-8'))
+    body = response.body.decode('utf-8')
+    if dump_std:
+        click.echo(body)
+    return json.loads(body)
 
 @click.command()
+@click.option('--dump-std', default=True )
 @click.pass_context
-def gt(ctx):
+def gt(ctx, dump_std):
     """ get sendgird dynamic templates """
     params = {'generations': 'dynamic'}
     response = ctx.obj['sg_client'].templates.get(query_params=params)
-    return json.loads(response.body.decode('utf-8'))['templates']
+    body = response.body.decode('utf-8')
+    if dump_std:
+        click.echo(body)
+    return json.loads(body)['templates']
+    # return json.loads(response.body.decode('utf-8'))['templates']
 
 
 @click.command()
+@click.option('--dump-std', default=True )
 @click.pass_context
-def gi(ctx):
+def gi(ctx, dump_std):
     """ get sendgird ip pools """
     response = ctx.obj['sg_client'].ips.pools.get()
-    return json.loads(response.body.decode('utf-8'))
+    body = response.body.decode('utf-8')
+    if dump_std:
+        click.echo(body)
+    return json.loads(body)
 
 @click.command()
 @click.argument('template_id')
+@click.option('--dump-std', default=True )
 @click.pass_context
-def gtd(ctx, template_id):
+def gtd(ctx, template_id, dump_std):
     """ get details for a specific template """
     response = ctx.obj['sg_client'].templates._(template_id).get()
     body = json.loads(response.body.decode('utf-8'))
@@ -112,6 +130,8 @@ def gtd(ctx, template_id):
     del(body['versions'])
     body['template'] = template
 
+    if dump_std:
+        click.echo(body)
     return body
 
 @click.command()
@@ -120,7 +140,7 @@ def gtd(ctx, template_id):
 def gtv(ctx, template_id):
     """ get the variables defined in a specific template. """
 
-    body = ctx.invoke(gtd, template_id = template_id)
+    body = ctx.invoke(gtd, template_id = template_id, dump_std=False)
     if not body['template']:
         click.echo('No active template version found')
         return []
@@ -133,4 +153,6 @@ def gtv(ctx, template_id):
         variables.remove('{unsubscribe_preferences')
     except:
         pass
+
+    click.echo(json.dumps(variables))
     return variables

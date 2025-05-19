@@ -79,3 +79,33 @@ class PattanEmail:
         except Exception as e:
             raise MailSendFailure
         return sg_response
+
+    def send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT', asm_group="DEFAULT", ip_pool="DEFAULT"):
+        """
+        This function should be used when the email is unique for each recipient.
+        :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
+        :return:
+        """
+        sender = self.senders[sender]
+        from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
+
+        asm = {
+            'group_id': self.unsubscribe_groups[asm_group].id,
+            'groups_to_display': [
+                self.unsubscribe_groups[asm_group].id
+            ]
+        }
+
+        message = {
+            'asm': asm,
+            'from': from_email,
+            'ip_pool_name': self.ip_pool[ip_pool].name,
+            'template_id': template_id,
+            'personalizations': personalization_list
+        }
+
+        try:
+            sg_response = self.sg.client.mail.send.post(request_body=message)
+        except Exception as e:
+            raise MailSendFailure
+        return sg_response

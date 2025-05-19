@@ -12,7 +12,7 @@ def pe_cli(ctx):
     if not api_key:
         # @todo the key should be able to be supplied as an optional argument
         click.echo("missing SENDGRID_API_KEY environment variable")
-        return
+        exit(1)
     sg = SendGridAPIClient(api_key=api_key)
     ctx.obj = {'sg_client': sg.client, 'api_key': api_key}
 

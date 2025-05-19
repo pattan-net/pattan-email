@@ -1,19 +1,19 @@
-### pattan-email
+### pattan-sendgrid
 
-pattan-email is a python package that combines the sendgrid package
+pattan-sendgrid is a python package that combines the sendgrid package
 with PaTTAN specific configurations.
 
 
 ## Quick start
 1. installation
-> pip install pattan-email
+> pip install pattan-sendgrid
 
 2. Create an environment variable 'SENDGRID_API_KEY' set its value to your sendgrid api key
 >  export SENDGRID_API_KEY="YOUR SENDGRID API KEY"
 3. Generate config by redirecting this output to a file or copy/paste to a file.  Keep this file out of your repo as it will contain your sendgrid api key
 > pe gc 
 4. Use the output from the command in step three to initialize the PattanEmail class.
->    from pattan_email.PattanEmail import PattanEmail 
+>    from pattan_sendgrid.PattanEmail import PattanEmail 
 >    ... {define PATTAN_EMAIL_CONFIG_JSON with the contents of the step 3 output}
 >    emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
 

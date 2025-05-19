@@ -1,6 +1,6 @@
 from sendgrid import SendGridAPIClient
 from .exceptions import MailSendFailure, MalformedConfiguration
-from pattan_email.models import Config
+from pattan_sendgrid.models import Config
 
 class PattanEmail:
     """

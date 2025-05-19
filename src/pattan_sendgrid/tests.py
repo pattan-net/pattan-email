@@ -2,7 +2,7 @@ import json
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from pattan_email.PattanEmail import PattanEmail
+from pattan_sendgrid.PattanEmail import PattanEmail
 from dotenv import load_dotenv
 
 

@@ -50,7 +50,7 @@ def gc(ctx):
         templates_config[template['name']]= {}
         templates_config[template['name']]['id'] = template['id']
         templates_config[template['name']]['name'] = template['name']
-        isolated_template_variables = ctx.invoke(gtv, template_id = template['id'])
+        isolated_template_variables = ctx.invoke(gtv, template_id = template['id'], dump_std=False)
         templates_config[template['name']]['variables'] = isolated_template_variables
     # @todo the default key (i.e. Pattan Standard Template) should be passed in
     templates_config['DEFAULT'] = templates_config['Pattan Standard Template']
@@ -125,8 +125,8 @@ def gtd(ctx, template_id, dump_std):
             template = version
             break
     if not template:
-        #@todo convert logger
-        click.echo('No active template version found')
+        # @todo convert logger
+        pass
     del(body['versions'])
     body['template'] = template
 
@@ -136,13 +136,13 @@ def gtd(ctx, template_id, dump_std):
 
 @click.command()
 @click.argument('template_id')
+@click.option('--dump-std', default=True )
 @click.pass_context
-def gtv(ctx, template_id):
+def gtv(ctx, template_id, dump_std):
     """ get the variables defined in a specific template. """
 
     body = ctx.invoke(gtd, template_id = template_id, dump_std=False)
     if not body['template']:
-        click.echo('No active template version found')
         return []
     # Regular expression to find all Mustache variables
     # @todo the parsing could be better also variables in the subject line are not detected.
@@ -154,5 +154,6 @@ def gtv(ctx, template_id):
     except:
         pass
 
-    click.echo(json.dumps(variables))
+    if dump_std:
+        click.echo(variables)
     return variables

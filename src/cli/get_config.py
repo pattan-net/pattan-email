@@ -3,8 +3,9 @@ import json
 import re
 
 @click.command()
+@click.option('--default-sender', help='Sender label as defined in sendgrid ')
 @click.pass_context
-def gc(ctx):
+def gc(ctx, default_sender):
     """ get and formate configuration information so its suitable for consumption by the patten_email class"""
     senders = ctx.invoke(gs, dump_std=False)
     ip_pools = ctx.invoke(gi, dump_std=False)
@@ -25,8 +26,14 @@ def gc(ctx):
         del sender['country']
         sender_config[sender['nickname']] = sender
         sender_config[sender['nickname']]['from_address'] = sender.pop('from')
-    #@todo the default key (i.e. no-reply@PaTTAN) should be passed in
-    sender_config['DEFAULT'] = sender_config['no-reply@PaTTAN']
+
+    sender_keys = list(sender_config.keys())
+    if default_sender in sender_keys:
+        sender_config['DEFAULT'] = sender_config[default_sender]
+    else:
+        if len(sender_config) > 0:
+            sender_config['DEFAULT'] = sender_config[sender_keys[0]]
+
     auto_generated_config_dict['senders'] = sender_config
 
 

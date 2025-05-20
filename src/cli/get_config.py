@@ -146,14 +146,16 @@ def gtv(ctx, template_id, dump_std):
         return []
     # Regular expression to find all Mustache variables
     # @todo the parsing could be better also variables in the subject line are not detected.
-    variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['plain_content'])
+    content_variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['plain_content'])
+    subject_variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['subject'])
     try:
         # these are defined with the asm config, @todo find a better mustache pattern the extra '{' is weird
-        variables.remove('{unsubscribe')
-        variables.remove('{unsubscribe_preferences')
+        content_variables.remove('{unsubscribe')
+        content_variables.remove('{unsubscribe_preferences')
     except:
         pass
 
     if dump_std:
-        click.echo(variables)
-    return variables
+        click.echo(f"content variables {content_variables}")
+        click.echo(f"subject variables {subject_variables}")
+    return content_variables + subject_variables

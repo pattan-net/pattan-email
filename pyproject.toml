@@ -16,7 +16,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "sendgrid>=6.10.0",
+    "sendgrid>=6.10.0","pydantic==2.11.4"
 ]
 
 keywords = ["pattan", "sendgrid", ]

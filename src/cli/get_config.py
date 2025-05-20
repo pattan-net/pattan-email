@@ -3,9 +3,12 @@ import json
 import re
 
 @click.command()
-@click.option('--default-sender', help='Sender label as defined in sendgrid ')
+@click.option('--default-sender', help='Sender label as defined in sendgrid. If left unset the first one found will be set as the default ')
+@click.option('--default-ip-pool', help='Sendgird -> settings -> ip addresses . If left unset the first one found will be set as the default ')
+@click.option('--default-unsubscribe_group', help='Sendgrid -> marketing -> unsubscribe group . If left unset the first one found will be set as the default ')
+@click.option('--default-dynamic-template', help='Sendgrid -> email api -> dynamic template . If left unset the first one found will be set as the default ')
 @click.pass_context
-def gc(ctx, default_sender):
+def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_dynamic_template):
     """ get and formate configuration information so its suitable for consumption by the patten_email class"""
     senders = ctx.invoke(gs, dump_std=False)
     ip_pools = ctx.invoke(gi, dump_std=False)
@@ -40,7 +43,14 @@ def gc(ctx, default_sender):
     ip_pool_config = {}
     for ip_pool in ip_pools:
         ip_pool_config[ip_pool['name']] = ip_pool
-    ip_pool_config['DEFAULT'] = ip_pool_config['Pattan_Transactional']
+
+    ip_pool_keys = list(ip_pool_config.keys())
+    if default_ip_pool in ip_pool_keys:
+        ip_pool_config['DEFAULT'] = ip_pool_config[default_ip_pool]
+    else:
+        if len(ip_pool_config) > 0:
+            ip_pool_config['DEFAULT'] = ip_pool_config[ip_pool_keys[0]]
+
     auto_generated_config_dict['ip_pools'] = ip_pool_config
 
 
@@ -48,8 +58,14 @@ def gc(ctx, default_sender):
     for unsubscribe_group in asm:
         unsubscribe_groups_config[unsubscribe_group['name']] = {}
         unsubscribe_groups_config[unsubscribe_group['name']]['id'] = unsubscribe_group['id']
-        # @todo the default key (i.e. SendGrid Tech Test Group) should be passed in
-    unsubscribe_groups_config['DEFAULT'] = unsubscribe_groups_config['SendGrid Tech Test Group']
+
+    unsubscribe_group_keys = list(unsubscribe_groups_config.keys())
+    if default_unsubscribe_group in unsubscribe_group_keys:
+        unsubscribe_groups_config['DEFAULT'] = unsubscribe_groups_config[default_unsubscribe_group]
+    else:
+        if len(unsubscribe_groups_config) > 0:
+            unsubscribe_groups_config['DEFAULT'] = unsubscribe_groups_config[unsubscribe_group_keys[0]]
+
     auto_generated_config_dict['unsubscribe_groups'] = unsubscribe_groups_config
 
     templates_config = {}
@@ -59,8 +75,15 @@ def gc(ctx, default_sender):
         templates_config[template['name']]['name'] = template['name']
         isolated_template_variables = ctx.invoke(gtv, template_id = template['id'], dump_std=False)
         templates_config[template['name']]['variables'] = isolated_template_variables
-    # @todo the default key (i.e. Pattan Standard Template) should be passed in
-    templates_config['DEFAULT'] = templates_config['Pattan Standard Template']
+
+
+    template_keys = list(templates_config.keys())
+    if default_dynamic_template in template_keys:
+        templates_config['DEFAULT'] = templates_config[default_dynamic_template]
+    else:
+        if len(templates_config) > 0:
+            templates_config['DEFAULT'] = templates_config[templates_config[0]]
+
     auto_generated_config_dict['email_templates'] = templates_config
 
     click.echo(json.dumps(auto_generated_config_dict))
@@ -154,7 +177,10 @@ def gtv(ctx, template_id, dump_std):
     # Regular expression to find all Mustache variables
     # @todo the parsing could be better also variables in the subject line are not detected.
     content_variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['plain_content'])
-    subject_variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['subject'])
+    subject_variables = []
+    if 'subject' in body['template'].keys():
+        subject_variables = re.findall(r'{{\s*([^}]+)\s*}}', body['template']['subject'])
+
     try:
         # these are defined with the asm config, @todo find a better mustache pattern the extra '{' is weird
         content_variables.remove('{unsubscribe')

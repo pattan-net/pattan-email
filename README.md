@@ -12,10 +12,12 @@ with PaTTAN specific configurations.
 >  export SENDGRID_API_KEY="YOUR SENDGRID API KEY"
 3. Generate config by redirecting this output to a file or copy/paste to a file.  Keep this file out of your repo as it will contain your sendgrid api key
 > pe gc 
-4. Use the output from the command in step three to initialize the PattanEmail class.
->    from pattan_sendgrid.PattanEmail import PattanEmail 
->    ... {define PATTAN_EMAIL_CONFIG_JSON with the contents of the step 3 output}
->    emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
+4. Use the output from the command in step three to initialize the PattanEmail class. 
+
+
+    from pattan_sendgrid import PattanEmail
+     ...
+    emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
 
 
 ## Resources

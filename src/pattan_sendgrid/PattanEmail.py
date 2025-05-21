@@ -49,7 +49,7 @@ class PattanEmail:
 
         personalizations = [{
             'to': to_addr,
-            'dynamic_template_data': dynamic_template_data.deep_copy(),
+            'dynamic_template_data': dynamic_template_data,
         }]
 
         from_email = {'email': sender.from_address.email}

@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv('../../.env')
 
 
-PATTAN_EMAIL_CONFIG_JSON = json.dumps(json.loads(os.environ.get('PATTAN_EMAIL_CONFIG', None)))
+PATTAN_EMAIL_CONFIG_JSON = os.environ.get('PATTAN_SENDGRID_CONFIG', None)
 
 def test_send_personalized_template_email():
 

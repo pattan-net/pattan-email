@@ -82,7 +82,7 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_
         templates_config['DEFAULT'] = templates_config[default_dynamic_template]
     else:
         if len(templates_config) > 0:
-            templates_config['DEFAULT'] = templates_config[templates_config[0]]
+            templates_config['DEFAULT'] = templates_config[template_keys[0]]
 
     auto_generated_config_dict['email_templates'] = templates_config
 

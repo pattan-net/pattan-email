@@ -9,7 +9,7 @@ import re
 @click.option('--default-dynamic-template', help='Sendgrid -> email api -> dynamic template . If left unset the first one found will be set as the default ')
 @click.pass_context
 def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_dynamic_template):
-    """ get and formate configuration information so its suitable for consumption by the patten_email class"""
+    """ get and format configuration information so its suitable for consumption by the patten_email class"""
     senders = ctx.invoke(gs, dump_std=False)
     ip_pools = ctx.invoke(gi, dump_std=False)
     asm = ctx.invoke(ga, dump_std=False)

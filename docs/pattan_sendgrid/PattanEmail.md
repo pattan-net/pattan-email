@@ -11,8 +11,8 @@ Classes
     ### Methods
 
     `send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT', asm_group='DEFAULT', ip_pool='DEFAULT')`
-    :   This function should be used when the email is unique for each recipient.
-        :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
+    :   This function should be used when the email is customized for each recipient.
+        :param personalization_list: contains a sender tuple and all the parameters in the sendgrid template.
         :return:
 
     `send_template_email(self, to_addr, dynamic_template_data=None, sender='DEFAULT', email_template='DEFAULT', asm_group='DEFAULT', ip_pool='DEFAULT')`

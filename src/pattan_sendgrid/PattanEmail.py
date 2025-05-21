@@ -43,7 +43,7 @@ class PattanEmail:
 
         sender = self.senders[sender]
 
-        # the to_addr can be a list of just a string of an email address.
+        # the to_addr can be a list of just a string or an email address.
         if isinstance(to_addr, str):
             to_addr = [{'name': to_addr, 'email': to_addr}]
 
@@ -82,8 +82,8 @@ class PattanEmail:
 
     def send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT', asm_group="DEFAULT", ip_pool="DEFAULT"):
         """
-        This function should be used when the email is unique for each recipient.
-        :param personalization_list: contains a sender tuple and all the parameters in th sendgrid template.
+        This function should be used when the email is customized for each recipient.
+        :param personalization_list: contains a sender tuple and all the parameters in the sendgrid template.
         :return:
         """
         sender = self.senders[sender]

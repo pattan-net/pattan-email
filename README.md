@@ -19,6 +19,9 @@ with PaTTAN specific configurations.
      ...
     emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
 
+## test
+Set the following environment variables file and add PATTAN_SENDGRID_CONFIG, TEST_DISPLAY_NAME, TEST_EMAIL_ADDRESS 
+Create a python script from pattan_sendgrid.test import test_send_personalized_template_email 
 
 ## Resources
 1. https://docs.djangoproject.com/en/5.0/intro/reusable-apps/

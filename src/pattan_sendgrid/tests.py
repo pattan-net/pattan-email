@@ -1,12 +1,10 @@
-import json
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from pattan_sendgrid import PattanEmail
-from dotenv import load_dotenv
 
 
-load_dotenv('../../.env')
+# @todo create the .env or set the following environment variables file and add PATTAN_SENDGRID_CONFIG, TEST_DISPLAY_NAME, TEST_EMAIL_ADDRESS this env file is only needed for testing
 
 
 PATTAN_EMAIL_CONFIG_JSON = os.environ.get('PATTAN_SENDGRID_CONFIG', None)
@@ -14,7 +12,7 @@ PATTAN_EMAIL_CONFIG_JSON = os.environ.get('PATTAN_SENDGRID_CONFIG', None)
 def test_send_personalized_template_email():
 
     emailer = PattanEmail(PATTAN_EMAIL_CONFIG_JSON)
-    to_addr = [{'name':'markus weltin', 'email':'mweltin@pattan.net'}]
+    to_addr = [{'name':os.environ.get('TEST_DISPLAY_NAME', None), 'email':os.environ.get('TEST_EMAIL_ADDRESS', None)}]
     body = "body of test email"
     subject = "subject of test email"
     dynamic_template_data = {

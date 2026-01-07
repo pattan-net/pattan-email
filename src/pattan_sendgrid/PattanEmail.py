@@ -84,14 +84,21 @@ class PattanEmail:
             raise MailSendFailure
         return sg_response
 
-    def send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT', asm_group="DEFAULT", ip_pool="DEFAULT"):
+    def send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT',
+                                         asm_group="DEFAULT", ip_pool="DEFAULT", from_addr=None):
         """
         This function should be used when the email is customized for each recipient.
         :param personalization_list: contains a sender tuple and all the parameters in the sendgrid template.
         :return:
         """
-        sender = self.senders[sender]
-        from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
+        if from_addr:
+            from_email = from_addr
+        else: 
+            sender = self.senders[sender]
+            if sender:
+                from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
+            else:
+                raise MalformedConfiguration('Assigned sender is not defined in your configuration')
 
         asm = {
             'group_id': self.unsubscribe_groups[asm_group].id,

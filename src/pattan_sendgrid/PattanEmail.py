@@ -25,8 +25,8 @@ class PattanEmail:
 
 
 
-    def send_template_email(self, to_addr, dynamic_template_data=None,
-                            sender='DEFAULT', email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT", from_addr=None):
+    def send_template_email(self, to_addr, dynamic_template_data=None, sender='DEFAULT', 
+                            email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT", from_addr=None):
         """
         Send the same email to one or more recipients.
         :param to_addr: email address dict or list of address dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
@@ -39,13 +39,14 @@ class PattanEmail:
         :return: SendGrid client response or throws an exception
         """
 
-        if sender not in self.senders.keys() and from_addr is None:
-            raise MalformedConfiguration('Assigned sender is not defined in your configuration')
-
         if from_addr:
-            sender = from_addr
-        else:
+            from_email = from_addr
+        else: 
             sender = self.senders[sender]
+            if sender:
+                from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
+            else:
+                raise MalformedConfiguration('Assigned sender is not defined in your configuration')
 
         # the to_addr can be a list of just a string or an email address.
         if isinstance(to_addr, str):
@@ -55,8 +56,6 @@ class PattanEmail:
             'to': to_addr,
             'dynamic_template_data': dynamic_template_data,
         }]
-
-        from_email = {'email': sender.from_address.email}
 
         if sender.nickname:
             from_email['name'] = sender.nickname

@@ -57,9 +57,6 @@ class PattanEmail:
             'dynamic_template_data': dynamic_template_data,
         }]
 
-        if sender.nickname:
-            from_email['name'] = sender.nickname
-
         asm = {
             'group_id': self.unsubscribe_groups[asm_group].id,
             'groups_to_display': [

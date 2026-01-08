@@ -35,18 +35,21 @@ class PattanEmail:
         :param sender: string Name of the sender email address e.g. "no-reply@PaTTAN"
         :param asm_group: string Name of the asm group (a.k.a. unsubscribe group)  e.g. "SendGrid Tech Test Group"
         :param ip_pool: string Name of the ip_pool e.g. "Pattan_Transactional"
-        :from_addr: email address dict for the message to be from; if included, the sender parameter will be ignored
+        :param from_addr: email address dict for the message to be from; if included, the sender parameter will be ignored
         :return: SendGrid client response or throws an exception
         """
 
         if from_addr:
             from_email = from_addr
         else: 
-            sender = self.senders[sender]
-            if sender:
-                from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
-            else:
+            if sender not in self.senders.keys():
                 raise MalformedConfiguration('Assigned sender is not defined in your configuration')
+
+            sender = self.senders[sender]
+
+            from_email = {'email': sender.from_address.email}
+            if sender.nickname:
+                from_email['name'] = sender.nickname
 
         # the to_addr can be a list of just a string or an email address.
         if isinstance(to_addr, str):
@@ -90,11 +93,14 @@ class PattanEmail:
         if from_addr:
             from_email = from_addr
         else: 
-            sender = self.senders[sender]
-            if sender:
-                from_email = {'email': sender['from']['email'], 'name': sender['nickname']}
-            else:
+            if sender not in self.senders.keys():
                 raise MalformedConfiguration('Assigned sender is not defined in your configuration')
+
+            sender = self.senders[sender]
+
+            from_email = {'email': sender.from_address.email}
+            if sender.nickname:
+                from_email['name'] = sender.nickname
 
         asm = {
             'group_id': self.unsubscribe_groups[asm_group].id,

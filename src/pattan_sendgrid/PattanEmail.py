@@ -1,5 +1,5 @@
 from sendgrid import SendGridAPIClient
-from .exceptions import MailSendFailure, MalformedConfiguration
+from .exceptions import MailSendFailure, MalformedConfiguration, BadSenderObject
 from pattan_sendgrid.models import Config
 
 class PattanEmail:
@@ -26,30 +26,19 @@ class PattanEmail:
 
 
     def send_template_email(self, to_addr, dynamic_template_data=None, sender='DEFAULT', 
-                            email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT", from_addr=None):
+                            email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT"):
         """
         Send the same email to one or more recipients.
-        :param to_addr: email address dict or list of address dicts e.g. [{'name':'bob', 'email':'bob@example.com'}]
+        :param to_addr: email address dict or list of address dicts e.g. [{'name':'bob', 'email':'bob@example.com'}],
         :param dynamic_template_data: dict that defines all the variables used in the selected email_template
         :param email_template: string Name of the template you want to use e.g. "PaTTAN Standard Template"
-        :param sender: string Name of the sender email address e.g. "no-reply@PaTTAN"
+        :param sender: string Name of the sender email address, e.g. "no-reply@PaTTAN"; or email address dict
         :param asm_group: string Name of the asm group (a.k.a. unsubscribe group)  e.g. "SendGrid Tech Test Group"
         :param ip_pool: string Name of the ip_pool e.g. "Pattan_Transactional"
-        :param from_addr: email address dict for the message to be from; if included, the sender parameter will be ignored
         :return: SendGrid client response or throws an exception
         """
 
-        if from_addr:
-            from_email = from_addr
-        else: 
-            if sender not in self.senders.keys():
-                raise MalformedConfiguration('Assigned sender is not defined in your configuration')
-
-            sender = self.senders[sender]
-
-            from_email = {'email': sender.from_address.email}
-            if sender.nickname:
-                from_email['name'] = sender.nickname
+        from_email = self.get_from_email_from_sender(sender)
 
         # the to_addr can be a list of just a string or an email address.
         if isinstance(to_addr, str):
@@ -90,17 +79,7 @@ class PattanEmail:
         :param personalization_list: contains a sender tuple and all the parameters in the sendgrid template.
         :return:
         """
-        if from_addr:
-            from_email = from_addr
-        else: 
-            if sender not in self.senders.keys():
-                raise MalformedConfiguration('Assigned sender is not defined in your configuration')
-
-            sender = self.senders[sender]
-
-            from_email = {'email': sender.from_address.email}
-            if sender.nickname:
-                from_email['name'] = sender.nickname
+        from_email = self.get_from_email_from_sender(sender)
 
         asm = {
             'group_id': self.unsubscribe_groups[asm_group].id,
@@ -122,3 +101,27 @@ class PattanEmail:
         except Exception as e:
             raise MailSendFailure
         return sg_response
+
+
+    def get_from_email_from_sender(self, sender):
+        if isinstance(sender, str):
+            if sender not in self.senders.keys():
+                raise MalformedConfiguration('Assigned sender is not defined in your configuration')
+
+            sender = self.senders[sender]
+            from_email = {'email': sender.from_address.email}
+            if sender.nickname:
+                from_email['name'] = sender.nickname
+            
+            return from_email
+        
+        else:
+            if 'email' in sender:
+                from_email = {'email': sender['email']}
+                if 'name' in sender:
+                    from_email['name'] = sender['name']
+                
+                return from_email
+            
+            else:
+                raise BadSenderObject

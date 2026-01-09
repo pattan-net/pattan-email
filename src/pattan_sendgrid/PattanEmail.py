@@ -73,7 +73,7 @@ class PattanEmail:
         return sg_response
 
     def send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT',
-                                         asm_group="DEFAULT", ip_pool="DEFAULT", from_addr=None):
+                                         asm_group="DEFAULT", ip_pool="DEFAULT"):
         """
         This function should be used when the email is customized for each recipient.
         :param personalization_list: contains a sender tuple and all the parameters in the sendgrid template.

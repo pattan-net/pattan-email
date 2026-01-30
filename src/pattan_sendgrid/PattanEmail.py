@@ -69,7 +69,7 @@ class PattanEmail:
         try:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:
-            raise MailSendFailure
+            raise MailSendFailure(f"{e}")
         return sg_response
 
     def send_personalized_template_email(self, personalization_list, template_id, sender='DEFAULT',
@@ -99,7 +99,7 @@ class PattanEmail:
         try:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:
-            raise MailSendFailure
+            raise MailSendFailure(f"{e}")
         return sg_response
 
 

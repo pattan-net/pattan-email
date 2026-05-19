@@ -15,9 +15,9 @@
     
   **gc**  - Get and format configuration for [PattanEmail](../pattan_sendgrid/PattanEmail.md) class
   
-  **gi**  - Get SendGrid ip pools
+  **gi**  - Get SendGrid IP pools
   
-  **gs**  - Get SendGrid approved senders
+  **gs**  - Get approved senders
   
   **gt**  - Get SendGrid dynamic templates
   

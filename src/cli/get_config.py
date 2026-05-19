@@ -9,7 +9,7 @@ import re
 @click.option('--default-dynamic-template', help='Sendgrid -> email api -> dynamic template . If left unset the first one found will be set as the default ')
 @click.pass_context
 def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_dynamic_template):
-    """ get and format configuration information so its suitable for consumption by the patten_email class"""
+    """ Get and format configuration for PattanEmail class"""
     senders = ctx.invoke(gs, dump_std=False)
     ip_pools = ctx.invoke(gi, dump_std=False)
     asm = ctx.invoke(ga, dump_std=False)
@@ -95,7 +95,7 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_
 @click.option('--dump-std', default=True )
 @click.pass_context
 def gs(ctx, dump_std):
-    """ get sendgird senders """
+    """ Get approved senders """
     response = ctx.obj['sg_client'].senders.get()
     body = response.body.decode('utf-8')
     if dump_std:
@@ -107,7 +107,7 @@ def gs(ctx, dump_std):
 @click.option('--dump-std', default=True )
 @click.pass_context
 def ga(ctx, dump_std):
-    """ get sendgird asms (unsubscribe groups)"""
+    """ Get SendGrid ASMs (unsubscribe groups)"""
     params = {}
     response = ctx.obj['sg_client'].asm.groups.get(query_params=params)
     body = response.body.decode('utf-8')
@@ -119,7 +119,7 @@ def ga(ctx, dump_std):
 @click.option('--dump-std', default=True )
 @click.pass_context
 def gt(ctx, dump_std):
-    """ get sendgird dynamic templates """
+    """ Get SendGrid dynamic templates"""
     params = {'generations': 'dynamic'}
     response = ctx.obj['sg_client'].templates.get(query_params=params)
     body = response.body.decode('utf-8')
@@ -133,7 +133,7 @@ def gt(ctx, dump_std):
 @click.option('--dump-std', default=True )
 @click.pass_context
 def gi(ctx, dump_std):
-    """ get sendgird ip pools """
+    """ Get SendGrid IP pools """
     response = ctx.obj['sg_client'].ips.pools.get()
     body = response.body.decode('utf-8')
     if dump_std:
@@ -145,7 +145,7 @@ def gi(ctx, dump_std):
 @click.option('--dump-std', default=True )
 @click.pass_context
 def gtd(ctx, template_id, dump_std):
-    """ get details for a specific template """
+    """ Get details for a specific template"""
     response = ctx.obj['sg_client'].templates._(template_id).get()
     body = json.loads(response.body.decode('utf-8'))
     # get the active version of the template
@@ -169,7 +169,7 @@ def gtd(ctx, template_id, dump_std):
 @click.option('--dump-std', default=True )
 @click.pass_context
 def gtv(ctx, template_id, dump_std):
-    """ get the variables defined in a specific template. """
+    """ Get the variables defined in a specific template"""
 
     body = ctx.invoke(gtd, template_id = template_id, dump_std=False)
     if not body['template']:

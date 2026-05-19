@@ -6,7 +6,7 @@ authors = [
   { name="Don Rea", email="drea@pattan.net" },
 ]
 maintainers = [
-  { name="Markus Weltin", email="mweltin@pattan.net" },
+  { name="Don Rea", email="drea@pattan.net" },
 ]
 description = "Manage Sendgrid assets"
 readme = "README.md"
@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "sendgrid>=6.10.0","pydantic>=2.11.4"
+    "sendgrid>=6.10.0","pydantic>=2.11.4","click>=8.2.0"
 ]
 
 keywords = ["pattan", "sendgrid", ]

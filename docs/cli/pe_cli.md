@@ -1,23 +1,26 @@
-Usage: pe [OPTIONS] COMMAND [ARGS]...
+# pe
 
-  CLI interface into the sendgrid backend to run export SENDGRID_API_KEY
-  environment variable
+  CLI utility for querying the SendGrid API  
+  Expects to find the SendGrid API key as the **SENDGRID_API_KEY** environment variable.
 
-Options:
-  --help  Show this message and exit.
+## Usage:
+`pe [OPTIONS] COMMAND [ARGS]`
 
-Commands:
+## Options:
+  **--help**  Show this message and exit.
 
-  ga  - get sendgird asms (unsubscribe groups)
+## Commands:
+
+  **ga**  - Get SendGrid ASMs (unsubscribe groups)
     
-  gc  - get and formate configuration information so it's suitable for use with PattanEmail class
+  **gc**  - Get and format configuration for [PattanEmail](../pattan_sendgrid/PattanEmail.md) class
   
-  gi  - get sendgird ip pools
+  **gi**  - Get SendGrid ip pools
   
-  gs  - get sendgird senders
+  **gs**  - Get SendGrid approved senders
   
-  gt  - get sendgird dynamic templates
+  **gt**  - Get SendGrid dynamic templates
   
-  gtd - get details for a specific template
+  **gtd** - Get details for a specific template
   
-  gtv - get the variables defined in a specific template.
+  **gtv** - Get the variables defined in a specific template

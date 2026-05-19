@@ -12,7 +12,7 @@ with PaTTAN-specific configurations.
     `pe gc >{your filename}`  
     If you are using Django, the project's **.env** is a good place for this value.
 4. Use the output from the command in step **3** to initialize the **PattanEmail** class (bash): 
-    ```
+    ```bash
     from pattan_sendgrid import PattanEmail
      ...
     emailer = PattanEmail({command output from step 3})

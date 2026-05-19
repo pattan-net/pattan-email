@@ -29,7 +29,6 @@ Documentation = "https://github.com/pattan-net/pattan-email/docs"
 [project.scripts]
 pe = "cli.pe_cli:pe_cli"
 
-
 [build-system]
 requires = ['setuptools>=40.8.0', 'sendgrid>=6.10.0', 'certifi', 'pydantic', 'click']
 build-backend = 'setuptools.build_meta'

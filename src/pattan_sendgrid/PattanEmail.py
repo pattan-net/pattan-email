@@ -100,6 +100,7 @@ class PattanEmail:
             sg_response = self.sg.client.mail.send.post(request_body=message)
         except Exception as e:
             raise MailSendFailure(f"{e}")
+
         return sg_response
 
 

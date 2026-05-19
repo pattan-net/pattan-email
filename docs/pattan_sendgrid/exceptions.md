@@ -1,29 +1,13 @@
-Module pattan_sendgrid.exceptions
-=================================
+# Module pattan_sendgrid.exceptions
+All classes can accept an optional message string as an argument to the constructor.
 
-Classes
--------
+## Classes
 
-`MailSendFailure(*args)`
-:   Common base class for all non-exit exceptions.
+### MailSendFailure
+Raise this to indicate a failure to transmit to the SendGrid API, or an error returned from the API.
 
-    ### Ancestors (in MRO)
+### MalformedConfiguration
+Raise this to indicate an error in parsing the configuration data passed to the [PattanEmail](PattanEmail.md) constructor.
 
-    * builtins.Exception
-    * builtins.BaseException
-
-`MalformedConfiguration(*args)`
-:   Common base class for all non-exit exceptions.
-
-    ### Ancestors (in MRO)
-
-    * builtins.Exception
-    * builtins.BaseException
-
-`MissingAPIKey(*args)`
-:   Common base class for all non-exit exceptions.
-
-    ### Ancestors (in MRO)
-
-    * builtins.Exception
-    * builtins.BaseException
+### MissingAPIKey
+Raise this when the environment variable **SENDGRID_API_KEY** is not found.

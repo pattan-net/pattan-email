@@ -6,9 +6,8 @@ import re
 @click.option('--default-sender', help='Sender label as defined in sendgrid. If left unset the first one found will be set as the default ')
 @click.option('--default-ip-pool', help='Sendgird -> settings -> ip addresses . If left unset the first one found will be set as the default ')
 @click.option('--default-unsubscribe_group', help='Sendgrid -> marketing -> unsubscribe group . If left unset the first one found will be set as the default ')
-@click.option('--default-dynamic-template', help='Sendgrid -> email api -> dynamic template . If left unset the first one found will be set as the default ')
 @click.pass_context
-def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_dynamic_template):
+def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group):
     """ Get and format configuration for PattanEmail class"""
     senders = ctx.invoke(gs, dump_std=False)
     ip_pools = ctx.invoke(gi, dump_std=False)
@@ -75,14 +74,6 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group, default_
         templates_config[template['name']]['name'] = template['name']
         isolated_template_variables = ctx.invoke(gtv, template_id = template['id'], dump_std=False)
         templates_config[template['name']]['variables'] = isolated_template_variables
-
-
-    template_keys = list(templates_config.keys())
-    if default_dynamic_template in template_keys:
-        templates_config['DEFAULT'] = templates_config[default_dynamic_template]
-    else:
-        if len(templates_config) > 0:
-            templates_config['DEFAULT'] = templates_config[template_keys[0]]
 
     auto_generated_config_dict['email_templates'] = templates_config
 

@@ -45,6 +45,4 @@ class Config(BaseModel):
             raise ValueError("ip_pools missing a default")
         if 'DEFAULT' not in values['unsubscribe_groups']:
             raise ValueError("unsubscribe_groups missing a default")
-        if 'DEFAULT' not in values['email_templates']:
-            raise ValueError("email_templates missing a default")
         return values

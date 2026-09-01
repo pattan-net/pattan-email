@@ -11,7 +11,7 @@ class PattanEmail:
         if not config_json:
             raise MalformedConfiguration
         try:
-            # pydantic validator makes sure each property is defined and has a default value set
+            # pydantic validator makes sure each property except email_templates is defined and has a default value set
             self.config = Config.model_validate_json(config_json)
         except Exception as e:
             raise MalformedConfiguration

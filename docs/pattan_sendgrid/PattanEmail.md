@@ -38,17 +38,17 @@ Example *personalization_list*:
 
 *ip_pool*: The SendGrid ID of the IP address pool from which this message batch is to be sent
 
-### send_template_email(to_addr, dynamic_template_data, sender, email_template, asm_group, ip_pool)
+### send_template_email(to_addr, email_template, dynamic_template_data, sender, asm_group, ip_pool)
 This function is useful when sending an identical message to one or more recipients.  
 **Parameters:**  
 *to_addr*: A list of dictionary objects, each including two keys, ***name*** and ***email*** - The values of each should be the name and email address of one of the recipients.  
+
+*email_template*: The name of the dynamic template this message batch is to use (required)  
 
 *dynamic_template_data* is a dictionary of whatever values the specified dynamic template expects.  
 
 *sender*: A dictionary of two keys, ***name*** and ***email*** - The values should be the name and email address of the person or organization the message is from.  
 
-*email_template*: The name of the dynamic template this message batch is to use  
-  
 *asm_group*: The SendGrid ASM group (unsubscribe group) ID for this message batch  
 
 *ip_pool*: The SendGrid ID of the IP address pool from which this message batch is to be sent

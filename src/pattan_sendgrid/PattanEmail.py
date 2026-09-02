@@ -25,13 +25,13 @@ class PattanEmail:
 
 
 
-    def send_template_email(self, to_addr, dynamic_template_data=None, sender='DEFAULT', 
-                            email_template="DEFAULT", asm_group="DEFAULT", ip_pool="DEFAULT"):
+    def send_template_email(self, to_addr, email_template, dynamic_template_data=None,
+                            sender='DEFAULT', asm_group="DEFAULT", ip_pool="DEFAULT"):
         """
         Send the same email to one or more recipients.
         :param to_addr: email address dict or list of address dicts e.g. [{'name':'bob', 'email':'bob@example.com'}],
-        :param dynamic_template_data: dict that defines all the variables used in the selected email_template
         :param email_template: string Name of the template you want to use e.g. "PaTTAN Standard Template"
+        :param dynamic_template_data: dict that defines all the variables used in the selected email_template
         :param sender: string Name of the sender email address, e.g. "no-reply@PaTTAN"; or email address dict
         :param asm_group: string Name of the asm group (a.k.a. unsubscribe group)  e.g. "SendGrid Tech Test Group"
         :param ip_pool: string Name of the ip_pool e.g. "Pattan_Transactional"

@@ -75,14 +75,6 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group):
         isolated_template_variables = ctx.invoke(gtv, template_id = template['id'], dump_std=False)
         templates_config[template['name']]['variables'] = isolated_template_variables
 
-
-    template_keys = list(templates_config.keys())
-    if default_dynamic_template in template_keys:
-        templates_config['DEFAULT'] = templates_config[default_dynamic_template]
-    else:
-        if len(templates_config) > 0:
-            templates_config['DEFAULT'] = templates_config[template_keys[0]]
-
     auto_generated_config_dict['email_templates'] = templates_config
 
     click.echo(json.dumps(auto_generated_config_dict))

@@ -18,6 +18,13 @@ with PaTTAN-specific configurations.
     emailer = PattanEmail({command output from step 3})
    ```
 
+## Development
+Run the test suite from the project root (no SendGrid API key or network access
+is needed; the SendGrid client is faked):
+```bash
+python -m unittest discover -s tests
+```
+
 ## Resources
 1. https://docs.djangoproject.com/en/5.0/intro/reusable-apps/
 2. https://pypi.org/project/sendgrid/

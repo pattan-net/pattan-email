@@ -2,10 +2,43 @@ import click
 import json
 import re
 
+# PaTTAN's preferred defaults, used when the matching option is not given on the
+# command line. When the preferred name is absent from the SendGrid account the
+# first item found is used instead.
+PREFERRED_SENDER = 'no-reply@PaTTAN'
+PREFERRED_IP_POOL = 'Pattan_Transactional'
+PREFERRED_UNSUBSCRIBE_GROUP = 'PaTTAN Events'
+
+
+def pick_default(requested, preferred, available, param_hint):
+    """ Work out which key should become the DEFAULT entry for a config section.
+
+    :param requested: name given on the command line, or None when the option was omitted
+    :param preferred: PaTTAN's preferred name for this section
+    :param available: the section built from the SendGrid account, keyed by name
+    :param param_hint: option name, used when reporting a bad value
+    :return: the key to copy to DEFAULT, or None when the section is empty
+    :raises click.BadParameter: the requested name is not in the SendGrid account
+    """
+    if requested is not None:
+        if requested not in available:
+            known = ', '.join(available) if available else 'none'
+            raise click.BadParameter(
+                f'"{requested}" was not found in your SendGrid account. Available: {known}',
+                param_hint=param_hint)
+        return requested
+    if preferred in available:
+        return preferred
+    if available:
+        # whatever the SendGrid API listed first
+        return next(iter(available))
+    return None
+
+
 @click.command()
-@click.option('--default-sender', help='Sender label as defined in sendgrid. If left unset the first one found will be set as the default ')
-@click.option('--default-ip-pool', help='Sendgird -> settings -> ip addresses . If left unset the first one found will be set as the default ')
-@click.option('--default-unsubscribe_group', help='Sendgrid -> marketing -> unsubscribe group . If left unset the first one found will be set as the default ')
+@click.option('--default-sender', help=f'Sender label as defined in sendgrid. If left unset "{PREFERRED_SENDER}" is used when present, otherwise the first one found ')
+@click.option('--default-ip-pool', help=f'Sendgird -> settings -> ip addresses . If left unset "{PREFERRED_IP_POOL}" is used when present, otherwise the first one found ')
+@click.option('--default-unsubscribe_group', help=f'Sendgrid -> marketing -> unsubscribe group . If left unset "{PREFERRED_UNSUBSCRIBE_GROUP}" is used when present, otherwise the first one found ')
 @click.pass_context
 def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group):
     """ Get and format configuration for PattanEmail class"""
@@ -29,12 +62,10 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group):
         sender_config[sender['nickname']] = sender
         sender_config[sender['nickname']]['from_address'] = sender.pop('from')
 
-    sender_keys = list(sender_config.keys())
-    if default_sender in sender_keys:
-        sender_config['DEFAULT'] = sender_config[default_sender]
-    else:
-        if len(sender_config) > 0:
-            sender_config['DEFAULT'] = sender_config[sender_keys[0]]
+    default_sender_key = pick_default(
+        default_sender, PREFERRED_SENDER, sender_config, '--default-sender')
+    if default_sender_key is not None:
+        sender_config['DEFAULT'] = sender_config[default_sender_key]
 
     auto_generated_config_dict['senders'] = sender_config
 
@@ -43,12 +74,10 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group):
     for ip_pool in ip_pools:
         ip_pool_config[ip_pool['name']] = ip_pool
 
-    ip_pool_keys = list(ip_pool_config.keys())
-    if default_ip_pool in ip_pool_keys:
-        ip_pool_config['DEFAULT'] = ip_pool_config[default_ip_pool]
-    else:
-        if len(ip_pool_config) > 0:
-            ip_pool_config['DEFAULT'] = ip_pool_config[ip_pool_keys[0]]
+    default_ip_pool_key = pick_default(
+        default_ip_pool, PREFERRED_IP_POOL, ip_pool_config, '--default-ip-pool')
+    if default_ip_pool_key is not None:
+        ip_pool_config['DEFAULT'] = ip_pool_config[default_ip_pool_key]
 
     auto_generated_config_dict['ip_pools'] = ip_pool_config
 
@@ -58,12 +87,12 @@ def gc(ctx, default_sender, default_ip_pool, default_unsubscribe_group):
         unsubscribe_groups_config[unsubscribe_group['name']] = {}
         unsubscribe_groups_config[unsubscribe_group['name']]['id'] = unsubscribe_group['id']
 
-    unsubscribe_group_keys = list(unsubscribe_groups_config.keys())
-    if default_unsubscribe_group in unsubscribe_group_keys:
-        unsubscribe_groups_config['DEFAULT'] = unsubscribe_groups_config[default_unsubscribe_group]
-    else:
-        if len(unsubscribe_groups_config) > 0:
-            unsubscribe_groups_config['DEFAULT'] = unsubscribe_groups_config[unsubscribe_group_keys[0]]
+    default_unsubscribe_group_key = pick_default(
+        default_unsubscribe_group, PREFERRED_UNSUBSCRIBE_GROUP,
+        unsubscribe_groups_config, '--default-unsubscribe_group')
+    if default_unsubscribe_group_key is not None:
+        unsubscribe_groups_config['DEFAULT'] = \
+            unsubscribe_groups_config[default_unsubscribe_group_key]
 
     auto_generated_config_dict['unsubscribe_groups'] = unsubscribe_groups_config
 

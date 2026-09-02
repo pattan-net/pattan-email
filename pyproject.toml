@@ -1,6 +1,6 @@
 [project]
 name = "pattan-sendgrid"
-version = "3.0.1"
+version = "3.1.0"
 authors = [
   { name="Markus Weltin", email="mweltin@pattan.net" },
   { name="Don Rea", email="drea@pattan.net" },
